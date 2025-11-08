@@ -2,10 +2,10 @@ import { useState } from "react";
 import { SectionLayout } from "@/components/SectionLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Quiz } from "@/components/Quiz";
+import { QuizSelector } from "@/components/QuizSelector";
 import { Link } from "react-router-dom";
 import { ArrowRight, ArrowLeft, BookOpen } from "lucide-react";
-import { protonsNeutronsQuiz } from "@/data/quizData";
+import { protonsNeutronsQuizEasy, protonsNeutronsQuizMedium, protonsNeutronsQuizHard } from "@/data/quizData";
 
 const ProtonsNeutrons = () => {
   const [showQuiz, setShowQuiz] = useState(false);
@@ -124,7 +124,14 @@ const ProtonsNeutrons = () => {
           </div>
         ) : (
           <>
-            <Quiz questions={protonsNeutronsQuiz} sectionId="protons-neutrons" />
+        <QuizSelector
+          easyQuiz={protonsNeutronsQuizEasy}
+          mediumQuiz={protonsNeutronsQuizMedium}
+          hardQuiz={protonsNeutronsQuizHard}
+          sectionId="protons-neutrons"
+          title="Test Your Knowledge"
+          description="Choose your difficulty level and master nuclear physics!"
+        />
             <div className="flex justify-between mt-8">
               <Button asChild variant="outline" size="lg" className="gap-2">
                 <Link to="/quantum">

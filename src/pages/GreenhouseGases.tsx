@@ -3,10 +3,10 @@ import { SectionLayout } from "@/components/SectionLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { GreenhouseGasVisualizer } from "@/components/GreenhouseGasVisualizer";
-import { Quiz } from "@/components/Quiz";
+import { QuizSelector } from "@/components/QuizSelector";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Flame, CloudRain, Wind, BookOpen, Trophy, TrendingUp, Factory, Leaf, AlertTriangle, Globe, Thermometer } from "lucide-react";
-import { greenhouseQuiz } from "@/data/quizData";
+import { greenhouseQuizEasy, greenhouseQuizMedium, greenhouseQuizHard } from "@/data/quizData";
 import { useProgress } from "@/hooks/useProgress";
 
 const GreenhouseGases = () => {
@@ -388,7 +388,14 @@ const GreenhouseGases = () => {
           </div>
         ) : (
           <>
-            <Quiz questions={greenhouseQuiz} sectionId="greenhouse" />
+        <QuizSelector
+          easyQuiz={greenhouseQuizEasy}
+          mediumQuiz={greenhouseQuizMedium}
+          hardQuiz={greenhouseQuizHard}
+          sectionId="greenhouse"
+          title="Test Your Knowledge"
+          description="Choose your difficulty level and master climate science!"
+        />
             
             {progress.sectionsCompleted.length === 4 && (
               <Card className="p-8 bg-gradient-to-br from-primary/20 to-secondary/20 backdrop-blur border-primary/30 mt-8 text-center">

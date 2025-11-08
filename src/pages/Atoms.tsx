@@ -3,10 +3,10 @@ import { SectionLayout } from "@/components/SectionLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AtomBuilder } from "@/components/AtomBuilder";
-import { Quiz } from "@/components/Quiz";
+import { QuizSelector } from "@/components/QuizSelector";
 import { Link } from "react-router-dom";
 import { ArrowRight, ArrowLeft, BookOpen } from "lucide-react";
-import { atomsQuiz } from "@/data/quizData";
+import { atomsQuizEasy, atomsQuizMedium, atomsQuizHard } from "@/data/quizData";
 
 const Atoms = () => {
   const [showQuiz, setShowQuiz] = useState(false);
@@ -156,7 +156,14 @@ const Atoms = () => {
           </div>
         ) : (
           <>
-            <Quiz questions={atomsQuiz} sectionId="atoms" />
+        <QuizSelector
+          easyQuiz={atomsQuizEasy}
+          mediumQuiz={atomsQuizMedium}
+          hardQuiz={atomsQuizHard}
+          sectionId="atoms"
+          title="Test Your Knowledge"
+          description="Choose your difficulty level and master atomic structure!"
+        />
             <div className="flex justify-between mt-8">
               <Button asChild variant="outline" size="lg" className="gap-2">
                 <Link to="/protons-neutrons">

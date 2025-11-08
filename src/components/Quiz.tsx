@@ -1,24 +1,42 @@
 import { useState } from "react";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
-import { CheckCircle2, XCircle, Trophy, RotateCcw } from "lucide-react";
+import { CheckCircle2, XCircle, Trophy, RotateCcw, Star } from "lucide-react";
 import { useProgress } from "@/hooks/useProgress";
 import { toast } from "sonner";
+
+export type QuizDifficulty = "easy" | "medium" | "hard";
 
 export interface QuizQuestion {
   question: string;
   options: string[];
   correctAnswer: number;
   explanation: string;
+  difficulty?: QuizDifficulty;
 }
 
 interface QuizProps {
   questions: QuizQuestion[];
   sectionId: string;
   onComplete?: (score: number) => void;
+  difficulty?: QuizDifficulty;
 }
 
-export const Quiz = ({ questions, sectionId, onComplete }: QuizProps) => {
+const getDifficultyColor = (difficulty?: QuizDifficulty) => {
+  switch (difficulty) {
+    case "easy": return "text-secondary";
+    case "medium": return "text-primary";
+    case "hard": return "text-destructive";
+    default: return "text-muted-foreground";
+  }
+};
+
+const getDifficultyLabel = (difficulty?: QuizDifficulty) => {
+  if (!difficulty) return "";
+  return difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+};
+
+export const Quiz = ({ questions, sectionId, onComplete, difficulty }: QuizProps) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
@@ -72,6 +90,11 @@ export const Quiz = ({ questions, sectionId, onComplete }: QuizProps) => {
       <Card className="p-8 bg-card/50 backdrop-blur border-border text-center">
         <Trophy className="w-16 h-16 mx-auto mb-4 text-primary" />
         <h3 className="text-3xl font-bold mb-2 text-foreground">Quiz Complete!</h3>
+        {difficulty && (
+          <p className={`text-sm font-semibold mb-2 ${getDifficultyColor(difficulty)}`}>
+            {getDifficultyLabel(difficulty)} Level
+          </p>
+        )}
         <p className="text-xl text-muted-foreground mb-6">
           Your Score: {score} / {questions.length} ({percentage}%)
         </p>
@@ -100,9 +123,17 @@ export const Quiz = ({ questions, sectionId, onComplete }: QuizProps) => {
     <Card className="p-8 bg-card/50 backdrop-blur border-border">
       <div className="mb-6">
         <div className="flex items-center justify-between mb-4">
-          <span className="text-sm font-mono text-muted-foreground">
-            Question {currentQuestion + 1} of {questions.length}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-mono text-muted-foreground">
+              Question {currentQuestion + 1} of {questions.length}
+            </span>
+            {question.difficulty && (
+              <span className={`text-xs font-semibold flex items-center gap-1 ${getDifficultyColor(question.difficulty)}`}>
+                <Star className="w-3 h-3" />
+                {getDifficultyLabel(question.difficulty)}
+              </span>
+            )}
+          </div>
           <span className="text-sm font-mono text-primary">
             Score: {score}/{questions.length}
           </span>

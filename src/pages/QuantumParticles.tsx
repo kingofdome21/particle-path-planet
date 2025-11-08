@@ -3,10 +3,10 @@ import { SectionLayout } from "@/components/SectionLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QuantumSimulator } from "@/components/QuantumSimulator";
-import { Quiz } from "@/components/Quiz";
+import { QuizSelector } from "@/components/QuizSelector";
 import { Link } from "react-router-dom";
 import { ArrowRight, BookOpen, Atom, Waves, Zap } from "lucide-react";
-import { quantumQuiz } from "@/data/quizData";
+import { quantumQuizEasy, quantumQuizMedium, quantumQuizHard } from "@/data/quizData";
 
 const QuantumParticles = () => {
   const [showQuiz, setShowQuiz] = useState(false);
@@ -205,7 +205,14 @@ const QuantumParticles = () => {
           </div>
         ) : (
           <>
-            <Quiz questions={quantumQuiz} sectionId="quantum" />
+        <QuizSelector
+          easyQuiz={quantumQuizEasy}
+          mediumQuiz={quantumQuizMedium}
+          hardQuiz={quantumQuizHard}
+          sectionId="quantum"
+          title="Test Your Knowledge"
+          description="Choose your difficulty level and master the quantum realm!"
+        />
             <div className="flex justify-center mt-8">
               <Button asChild size="lg" className="gap-2">
                 <Link to="/protons-neutrons">
