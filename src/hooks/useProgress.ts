@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export interface Progress {
   sectionsCompleted: string[];
@@ -7,8 +9,6 @@ export interface Progress {
   currentSection: string;
   lastVisited: string;
 }
-
-const STORAGE_KEY = "particle-explorer-progress";
 
 const defaultProgress: Progress = {
   sectionsCompleted: [],
@@ -19,16 +19,84 @@ const defaultProgress: Progress = {
 };
 
 export const useProgress = () => {
-  const [progress, setProgress] = useState<Progress>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : defaultProgress;
-  });
+  const [progress, setProgress] = useState<Progress>(defaultProgress);
+  const [loading, setLoading] = useState(true);
 
+  // Load progress from database
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
-  }, [progress]);
+    const loadProgress = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        setLoading(false);
+        return;
+      }
 
-  const completeSection = (section: string) => {
+      const { data, error } = await supabase
+        .from("user_progress")
+        .select("*")
+        .eq("user_id", session.user.id);
+
+      if (error) {
+        console.error("Error loading progress:", error);
+        setLoading(false);
+        return;
+      }
+
+      if (data && data.length > 0) {
+        const sectionsCompleted = data
+          .filter(p => p.completed)
+          .map(p => p.section_id);
+
+        const quizScores: Record<string, number> = {};
+        data.forEach(p => {
+          if (p.quiz_score > 0) {
+            quizScores[p.section_id] = p.quiz_score;
+          }
+        });
+
+        const totalScore = Object.values(quizScores).reduce((a, b) => a + b, 0);
+
+        setProgress({
+          sectionsCompleted,
+          quizScores,
+          totalScore,
+          currentSection: data[data.length - 1]?.section_id || "home",
+          lastVisited: new Date().toISOString(),
+        });
+      }
+
+      setLoading(false);
+    };
+
+    loadProgress();
+  }, []);
+
+  const completeSection = async (section: string) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session) {
+      toast.error("Please sign in to save your progress");
+      return;
+    }
+
+    const { error } = await supabase
+      .from("user_progress")
+      .upsert({
+        user_id: session.user.id,
+        section_id: section,
+        completed: true,
+        completed_at: new Date().toISOString(),
+      }, {
+        onConflict: "user_id,section_id"
+      });
+
+    if (error) {
+      console.error("Error saving progress:", error);
+      toast.error("Failed to save progress");
+      return;
+    }
+
     setProgress((prev) => ({
       ...prev,
       sectionsCompleted: prev.sectionsCompleted.includes(section)
@@ -39,7 +107,30 @@ export const useProgress = () => {
     }));
   };
 
-  const saveQuizScore = (section: string, score: number) => {
+  const saveQuizScore = async (section: string, score: number) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session) {
+      toast.error("Please sign in to save your quiz score");
+      return;
+    }
+
+    const { error } = await supabase
+      .from("user_progress")
+      .upsert({
+        user_id: session.user.id,
+        section_id: section,
+        quiz_score: score,
+      }, {
+        onConflict: "user_id,section_id"
+      });
+
+    if (error) {
+      console.error("Error saving quiz score:", error);
+      toast.error("Failed to save quiz score");
+      return;
+    }
+
     setProgress((prev) => ({
       ...prev,
       quizScores: { ...prev.quizScores, [section]: score },
@@ -50,9 +141,27 @@ export const useProgress = () => {
     }));
   };
 
-  const resetProgress = () => {
+  const resetProgress = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session) {
+      toast.error("Please sign in to reset your progress");
+      return;
+    }
+
+    const { error } = await supabase
+      .from("user_progress")
+      .delete()
+      .eq("user_id", session.user.id);
+
+    if (error) {
+      console.error("Error resetting progress:", error);
+      toast.error("Failed to reset progress");
+      return;
+    }
+
     setProgress(defaultProgress);
-    localStorage.removeItem(STORAGE_KEY);
+    toast.success("Progress reset successfully");
   };
 
   const getCompletionPercentage = () => {
@@ -62,6 +171,7 @@ export const useProgress = () => {
 
   return {
     progress,
+    loading,
     completeSection,
     saveQuizScore,
     resetProgress,

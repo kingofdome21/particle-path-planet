@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LearningChatbot } from "@/components/LearningChatbot";
 import Index from "./pages/Index";
+import Auth from "./pages/Auth";
 import QuantumParticles from "./pages/QuantumParticles";
 import ProtonsNeutrons from "./pages/ProtonsNeutrons";
 import Atoms from "./pages/Atoms";
@@ -21,6 +22,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/auth" element={<Auth />} />
           <Route path="/quantum" element={<QuantumParticles />} />
           <Route path="/protons-neutrons" element={<ProtonsNeutrons />} />
           <Route path="/atoms" element={<Atoms />} />

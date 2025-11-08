@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { Atom, FlaskConical, Globe, Sparkles } from "lucide-react";
 import { Button } from "./ui/button";
+import { UserMenu } from "./UserMenu";
 
 const navItems = [
   { path: "/", label: "Home", icon: Sparkles },
@@ -42,6 +43,8 @@ export const NavigationBar = () => {
               );
             })}
           </div>
+
+          <UserMenu />
         </div>
       </div>
     </nav>
