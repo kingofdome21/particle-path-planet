@@ -1,10 +1,17 @@
+import { useState } from "react";
 import { SectionLayout } from "@/components/SectionLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { InteractiveParticle } from "@/components/InteractiveParticle";
+import { Quiz } from "@/components/Quiz";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Flame, CloudRain, Wind } from "lucide-react";
+import { ArrowLeft, Flame, CloudRain, Wind, BookOpen, Trophy } from "lucide-react";
+import { greenhouseQuiz } from "@/data/quizData";
+import { useProgress } from "@/hooks/useProgress";
 
 const GreenhouseGases = () => {
+  const [showQuiz, setShowQuiz] = useState(false);
+  const { progress, getCompletionPercentage } = useProgress();
   const gases = [
     {
       name: "Carbon Dioxide",
@@ -106,7 +113,14 @@ const GreenhouseGases = () => {
           })}
         </div>
 
-        <Card className="p-8 bg-card/50 backdrop-blur border-border mb-8">
+        <InteractiveParticle
+          title="Greenhouse Gas Molecules"
+          description="Visualize CO₂, CH₄, and other greenhouse gas molecules. Their unique structures allow them to absorb infrared radiation and trap heat."
+          particleCount={20}
+          particleColor="hsl(25, 85%, 55%)"
+        />
+
+        <Card className="p-8 bg-card/50 backdrop-blur border-border my-8">
           <h2 className="text-2xl font-bold mb-4 text-foreground">
             From Particles to Climate Crisis
           </h2>
@@ -149,16 +163,61 @@ const GreenhouseGases = () => {
           </div>
         </Card>
 
-        <div className="flex justify-between">
-          <Button asChild variant="outline" size="lg" className="gap-2">
-            <Link to="/atoms">
-              <ArrowLeft className="w-5 h-5" /> Back: Atoms
-            </Link>
-          </Button>
-          <Button asChild size="lg" className="gap-2">
-            <Link to="/">Start Over</Link>
-          </Button>
-        </div>
+        {!showQuiz ? (
+          <div className="flex flex-col sm:flex-row gap-4 justify-between">
+            <Button asChild variant="outline" size="lg" className="gap-2">
+              <Link to="/atoms">
+                <ArrowLeft className="w-5 h-5" /> Back: Atoms
+              </Link>
+            </Button>
+            <Button onClick={() => setShowQuiz(true)} size="lg" className="gap-2">
+              <BookOpen className="w-5 h-5" />
+              Complete Final Quiz
+            </Button>
+          </div>
+        ) : (
+          <>
+            <Quiz questions={greenhouseQuiz} sectionId="greenhouse" />
+            
+            {progress.sectionsCompleted.length === 4 && (
+              <Card className="p-8 bg-gradient-to-br from-primary/20 to-secondary/20 backdrop-blur border-primary/30 mt-8 text-center">
+                <Trophy className="w-16 h-16 mx-auto mb-4 text-primary animate-pulse-slow" />
+                <h3 className="text-3xl font-bold mb-2 text-foreground">
+                  Congratulations! 🎉
+                </h3>
+                <p className="text-xl text-muted-foreground mb-4">
+                  You've completed the entire Particle Explorer journey!
+                </p>
+                <div className="flex flex-col items-center gap-2 mb-6">
+                  <div className="text-4xl font-bold text-primary">
+                    {getCompletionPercentage()}%
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Total Score: {progress.totalScore} points
+                  </div>
+                </div>
+                <p className="text-muted-foreground mb-6">
+                  You now understand the journey from quantum particles to climate science.
+                  This knowledge empowers you to make informed decisions about our planet's future!
+                </p>
+                <Button asChild size="lg">
+                  <Link to="/">Return to Home</Link>
+                </Button>
+              </Card>
+            )}
+
+            <div className="flex justify-between mt-8">
+              <Button asChild variant="outline" size="lg" className="gap-2">
+                <Link to="/atoms">
+                  <ArrowLeft className="w-5 h-5" /> Back: Atoms
+                </Link>
+              </Button>
+              <Button asChild size="lg" className="gap-2">
+                <Link to="/">Return Home</Link>
+              </Button>
+            </div>
+          </>
+        )}
       </div>
     </SectionLayout>
   );

@@ -1,10 +1,15 @@
+import { useState } from "react";
 import { SectionLayout } from "@/components/SectionLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { InteractiveParticle } from "@/components/InteractiveParticle";
+import { Quiz } from "@/components/Quiz";
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, BookOpen } from "lucide-react";
+import { quantumQuiz } from "@/data/quizData";
 
 const QuantumParticles = () => {
+  const [showQuiz, setShowQuiz] = useState(false);
   const particles = [
     {
       name: "Quarks",
@@ -67,7 +72,14 @@ const QuantumParticles = () => {
           ))}
         </div>
 
-        <Card className="p-8 bg-card/50 backdrop-blur border-border mb-8">
+        <InteractiveParticle
+          title="Quantum Particle Simulation"
+          description="Watch quarks and leptons interact! Move your mouse to influence the particles and see them form connections through force carriers."
+          particleCount={25}
+          particleColor="hsl(180, 100%, 50%)"
+        />
+
+        <Card className="p-8 bg-card/50 backdrop-blur border-border my-8">
           <h2 className="text-2xl font-bold mb-4 text-foreground">
             The Quantum World
           </h2>
@@ -87,16 +99,38 @@ const QuantumParticles = () => {
               don't experience the strong force. Their movement in atoms creates the chemistry that
               makes life possible.
             </p>
+            <p>
+              <strong className="text-foreground">Wave-Particle Duality:</strong> All quantum
+              particles exhibit both wave and particle properties. An electron can behave like a
+              particle when detected, but shows wave interference patterns in double-slit experiments.
+            </p>
           </div>
         </Card>
 
-        <div className="flex justify-center">
-          <Button asChild size="lg" className="gap-2">
-            <Link to="/protons-neutrons">
-              Next: Protons & Neutrons <ArrowRight className="w-5 h-5" />
-            </Link>
-          </Button>
-        </div>
+        {!showQuiz ? (
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button onClick={() => setShowQuiz(true)} size="lg" className="gap-2">
+              <BookOpen className="w-5 h-5" />
+              Take the Quiz
+            </Button>
+            <Button asChild size="lg" variant="outline" className="gap-2">
+              <Link to="/protons-neutrons">
+                Skip to Next: Protons & Neutrons <ArrowRight className="w-5 h-5" />
+              </Link>
+            </Button>
+          </div>
+        ) : (
+          <>
+            <Quiz questions={quantumQuiz} sectionId="quantum" />
+            <div className="flex justify-center mt-8">
+              <Button asChild size="lg" className="gap-2">
+                <Link to="/protons-neutrons">
+                  Next: Protons & Neutrons <ArrowRight className="w-5 h-5" />
+                </Link>
+              </Button>
+            </div>
+          </>
+        )}
       </div>
     </SectionLayout>
   );

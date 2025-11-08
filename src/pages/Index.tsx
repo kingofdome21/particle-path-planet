@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { SectionLayout } from "@/components/SectionLayout";
+import { ProgressBar } from "@/components/ProgressBar";
 import { ArrowRight, Atom, FlaskConical, Globe, Sparkles } from "lucide-react";
 import heroImage from "@/assets/hero-particles.jpg";
 
@@ -40,6 +41,11 @@ const Index = () => {
   return (
     <SectionLayout>
       <div className="container mx-auto px-4">
+        {/* Progress Bar */}
+        <div className="mb-8">
+          <ProgressBar />
+        </div>
+
         {/* Hero Section */}
         <div className="relative overflow-hidden rounded-2xl mb-12">
           <img

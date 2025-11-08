@@ -1,10 +1,15 @@
+import { useState } from "react";
 import { SectionLayout } from "@/components/SectionLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { AtomBuilder } from "@/components/AtomBuilder";
+import { Quiz } from "@/components/Quiz";
 import { Link } from "react-router-dom";
-import { ArrowRight, ArrowLeft } from "lucide-react";
+import { ArrowRight, ArrowLeft, BookOpen } from "lucide-react";
+import { atomsQuiz } from "@/data/quizData";
 
 const Atoms = () => {
+  const [showQuiz, setShowQuiz] = useState(false);
   const elements = [
     {
       name: "Hydrogen",
@@ -103,6 +108,10 @@ const Atoms = () => {
           ))}
         </div>
 
+        <div className="mb-8">
+          <AtomBuilder />
+        </div>
+
         <Card className="p-8 bg-card/50 backdrop-blur border-border mb-8">
           <h2 className="text-2xl font-bold mb-4 text-foreground">The Periodic Table</h2>
           <div className="space-y-4 text-muted-foreground">
@@ -120,21 +129,48 @@ const Atoms = () => {
               combinations of these elements. Chemistry is the study of how atoms interact and bond
               to form molecules and compounds.
             </p>
+            <p>
+              <strong className="text-foreground">Chemical Bonds:</strong> Atoms form bonds by
+              sharing or transferring electrons. Covalent bonds involve sharing electrons (like in
+              H₂O), while ionic bonds involve transferring electrons (like in NaCl, table salt).
+            </p>
           </div>
         </Card>
 
-        <div className="flex justify-between">
-          <Button asChild variant="outline" size="lg" className="gap-2">
-            <Link to="/protons-neutrons">
-              <ArrowLeft className="w-5 h-5" /> Back: Protons & Neutrons
-            </Link>
-          </Button>
-          <Button asChild size="lg" className="gap-2">
-            <Link to="/greenhouse">
-              Next: Greenhouse Effect <ArrowRight className="w-5 h-5" />
-            </Link>
-          </Button>
-        </div>
+        {!showQuiz ? (
+          <div className="flex flex-col sm:flex-row gap-4 justify-between">
+            <Button asChild variant="outline" size="lg" className="gap-2">
+              <Link to="/protons-neutrons">
+                <ArrowLeft className="w-5 h-5" /> Back: Protons & Neutrons
+              </Link>
+            </Button>
+            <Button onClick={() => setShowQuiz(true)} size="lg" className="gap-2">
+              <BookOpen className="w-5 h-5" />
+              Take the Quiz
+            </Button>
+            <Button asChild size="lg" variant="outline" className="gap-2">
+              <Link to="/greenhouse">
+                Skip to Next: Greenhouse Effect <ArrowRight className="w-5 h-5" />
+              </Link>
+            </Button>
+          </div>
+        ) : (
+          <>
+            <Quiz questions={atomsQuiz} sectionId="atoms" />
+            <div className="flex justify-between mt-8">
+              <Button asChild variant="outline" size="lg" className="gap-2">
+                <Link to="/protons-neutrons">
+                  <ArrowLeft className="w-5 h-5" /> Back: Protons & Neutrons
+                </Link>
+              </Button>
+              <Button asChild size="lg" className="gap-2">
+                <Link to="/greenhouse">
+                  Next: Greenhouse Effect <ArrowRight className="w-5 h-5" />
+                </Link>
+              </Button>
+            </div>
+          </>
+        )}
       </div>
     </SectionLayout>
   );

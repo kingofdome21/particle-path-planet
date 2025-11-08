@@ -1,10 +1,16 @@
+import { useState } from "react";
 import { SectionLayout } from "@/components/SectionLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { InteractiveParticle } from "@/components/InteractiveParticle";
+import { Quiz } from "@/components/Quiz";
 import { Link } from "react-router-dom";
-import { ArrowRight, ArrowLeft } from "lucide-react";
+import { ArrowRight, ArrowLeft, BookOpen } from "lucide-react";
+import { protonsNeutronsQuiz } from "@/data/quizData";
 
 const ProtonsNeutrons = () => {
+  const [showQuiz, setShowQuiz] = useState(false);
+
   return (
     <SectionLayout>
       <div className="container mx-auto px-4 max-w-5xl">
@@ -84,7 +90,14 @@ const ProtonsNeutrons = () => {
           </div>
         </Card>
 
-        <Card className="p-8 bg-gradient-to-r from-card/50 to-muted/30 backdrop-blur border-border mb-8">
+        <InteractiveParticle
+          title="Nucleon Interaction Simulation"
+          description="See how protons and neutrons behave in the nucleus! The particles represent nucleons held together by the strong force."
+          particleCount={15}
+          particleColor="hsl(10, 90%, 60%)"
+        />
+
+        <Card className="p-8 bg-gradient-to-r from-card/50 to-muted/30 backdrop-blur border-border my-8">
           <h2 className="text-2xl font-bold mb-4 text-foreground">Building the Nucleus</h2>
           <p className="text-muted-foreground mb-4">
             Protons and neutrons cluster together in the atomic nucleus, held by the residual
@@ -100,18 +113,40 @@ const ProtonsNeutrons = () => {
           </p>
         </Card>
 
-        <div className="flex justify-between">
-          <Button asChild variant="outline" size="lg" className="gap-2">
-            <Link to="/quantum">
-              <ArrowLeft className="w-5 h-5" /> Back: Quantum Particles
-            </Link>
-          </Button>
-          <Button asChild size="lg" className="gap-2">
-            <Link to="/atoms">
-              Next: Atoms <ArrowRight className="w-5 h-5" />
-            </Link>
-          </Button>
-        </div>
+        {!showQuiz ? (
+          <div className="flex flex-col sm:flex-row gap-4 justify-between">
+            <Button asChild variant="outline" size="lg" className="gap-2">
+              <Link to="/quantum">
+                <ArrowLeft className="w-5 h-5" /> Back: Quantum Particles
+              </Link>
+            </Button>
+            <Button onClick={() => setShowQuiz(true)} size="lg" className="gap-2">
+              <BookOpen className="w-5 h-5" />
+              Take the Quiz
+            </Button>
+            <Button asChild size="lg" variant="outline" className="gap-2">
+              <Link to="/atoms">
+                Skip to Next: Atoms <ArrowRight className="w-5 h-5" />
+              </Link>
+            </Button>
+          </div>
+        ) : (
+          <>
+            <Quiz questions={protonsNeutronsQuiz} sectionId="protons-neutrons" />
+            <div className="flex justify-between mt-8">
+              <Button asChild variant="outline" size="lg" className="gap-2">
+                <Link to="/quantum">
+                  <ArrowLeft className="w-5 h-5" /> Back: Quantum Particles
+                </Link>
+              </Button>
+              <Button asChild size="lg" className="gap-2">
+                <Link to="/atoms">
+                  Next: Atoms <ArrowRight className="w-5 h-5" />
+                </Link>
+              </Button>
+            </div>
+          </>
+        )}
       </div>
     </SectionLayout>
   );
