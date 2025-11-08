@@ -23,7 +23,6 @@ export const LearningChatbot = () => {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -37,14 +36,20 @@ export const LearningChatbot = () => {
     setMessages(updatedMessages);
 
     try {
-      const resp = await fetch(CHAT_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-        },
-        body: JSON.stringify({ messages: updatedMessages }),
-      });
+      // Get the session for authentication
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      const resp = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          },
+          body: JSON.stringify({ messages: updatedMessages }),
+        }
+      );
 
       if (!resp.ok) {
         if (resp.status === 429) {
