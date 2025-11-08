@@ -3,6 +3,7 @@ import { SectionLayout } from "@/components/SectionLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QuizSelector } from "@/components/QuizSelector";
+import { CompleteSectionButton } from "@/components/CompleteSectionButton";
 import { Link } from "react-router-dom";
 import { ArrowRight, ArrowLeft, BookOpen } from "lucide-react";
 import { protonsNeutronsQuizEasy, protonsNeutronsQuizMedium, protonsNeutronsQuizHard } from "@/data/quizData";
@@ -104,6 +105,10 @@ const ProtonsNeutrons = () => {
             leading to radioactive decay.
           </p>
         </Card>
+
+        <div className="flex justify-center mb-8">
+          <CompleteSectionButton sectionId="protons-neutrons" sectionName="Protons & Neutrons" />
+        </div>
 
         {!showQuiz ? (
           <div className="flex flex-col sm:flex-row gap-4 justify-between">

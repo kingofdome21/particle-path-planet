@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AtomBuilder } from "@/components/AtomBuilder";
 import { QuizSelector } from "@/components/QuizSelector";
+import { CompleteSectionButton } from "@/components/CompleteSectionButton";
 import { Link } from "react-router-dom";
 import { ArrowRight, ArrowLeft, BookOpen } from "lucide-react";
 import { atomsQuizEasy, atomsQuizMedium, atomsQuizHard } from "@/data/quizData";
@@ -136,6 +137,10 @@ const Atoms = () => {
             </p>
           </div>
         </Card>
+
+        <div className="flex justify-center mb-8">
+          <CompleteSectionButton sectionId="atoms" sectionName="Atoms" />
+        </div>
 
         {!showQuiz ? (
           <div className="flex flex-col sm:flex-row gap-4 justify-between">

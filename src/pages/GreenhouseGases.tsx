@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { GreenhouseGasVisualizer } from "@/components/GreenhouseGasVisualizer";
 import { QuizSelector } from "@/components/QuizSelector";
+import { CompleteSectionButton } from "@/components/CompleteSectionButton";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Flame, CloudRain, Wind, BookOpen, Trophy, TrendingUp, Factory, Leaf, AlertTriangle, Globe, Thermometer } from "lucide-react";
 import { greenhouseQuizEasy, greenhouseQuizMedium, greenhouseQuizHard } from "@/data/quizData";
@@ -373,6 +374,10 @@ const GreenhouseGases = () => {
             </div>
           </div>
         </Card>
+
+        <div className="flex justify-center mb-8">
+          <CompleteSectionButton sectionId="greenhouse" sectionName="Greenhouse Gases" />
+        </div>
 
         {!showQuiz ? (
           <div className="flex flex-col sm:flex-row gap-4 justify-between">
