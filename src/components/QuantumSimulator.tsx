@@ -2,10 +2,12 @@ import { useState, useRef, useEffect } from "react";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
+import { toast } from "sonner";
 
 type ParticleType = "quark-up" | "quark-down" | "electron" | "gluon" | "proton" | "neutron";
 
 interface Particle {
+  id: number;
   x: number;
   y: number;
   vx: number;
@@ -13,13 +15,22 @@ interface Particle {
   type: ParticleType;
   radius: number;
   charge: number;
-  bound?: boolean;
-  boundTo?: number[];
+  dragging?: boolean;
+  partOfComposite?: number; // ID of composite particle this belongs to
 }
 
-interface QuantumSimulatorProps {
-  mode: "quarks" | "formation" | "forces";
+interface CompositeParticle {
+  id: number;
+  type: "proton" | "neutron";
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  quarks: number[]; // IDs of quarks that form this
+  radius: number;
 }
+
+interface QuantumSimulatorProps {}
 
 const particleConfig = {
   "quark-up": { color: "hsl(280, 100%, 60%)", label: "Up", charge: 2/3, radius: 6 },
@@ -30,14 +41,114 @@ const particleConfig = {
   "neutron": { color: "hsl(200, 30%, 60%)", label: "n", charge: 0, radius: 14 },
 };
 
-export const QuantumSimulator = ({ mode }: QuantumSimulatorProps) => {
+export const QuantumSimulator = ({}: QuantumSimulatorProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [particles, setParticles] = useState<Particle[]>([]);
   const particlesRef = useRef<Particle[]>([]);
-  const mouseRef = useRef({ x: 0, y: 0, active: false });
+  const compositesRef = useRef<CompositeParticle[]>([]);
+  const mouseRef = useRef({ x: 0, y: 0 });
+  const draggedParticleRef = useRef<number | null>(null);
   const animationRef = useRef<number>();
   const [showLabels, setShowLabels] = useState(true);
-  const [selectedParticle, setSelectedParticle] = useState<string | null>(null);
+  const [stats, setStats] = useState({ protons: 0, neutrons: 0, freeQuarks: 0 });
+  const nextIdRef = useRef(0);
+
+  const addQuark = (type: "quark-up" | "quark-down") => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const newParticle: Particle = {
+      id: nextIdRef.current++,
+      x: Math.random() * (canvas.width - 100) + 50,
+      y: Math.random() * (canvas.height - 100) + 50,
+      vx: 0,
+      vy: 0,
+      type,
+      radius: particleConfig[type].radius,
+      charge: particleConfig[type].charge,
+    };
+
+    particlesRef.current.push(newParticle);
+    updateStats();
+  };
+
+  const resetSimulation = () => {
+    particlesRef.current = [];
+    compositesRef.current = [];
+    nextIdRef.current = 0;
+    updateStats();
+    toast.success("Simulation reset!");
+  };
+
+  const updateStats = () => {
+    const freeQuarks = particlesRef.current.filter(p => !p.partOfComposite).length;
+    setStats({
+      protons: compositesRef.current.filter(c => c.type === "proton").length,
+      neutrons: compositesRef.current.filter(c => c.type === "neutron").length,
+      freeQuarks,
+    });
+  };
+
+  const checkQuarkProximity = () => {
+    const freeQuarks = particlesRef.current.filter(p => !p.partOfComposite);
+    
+    // Check for proton formation (2 up + 1 down)
+    for (let i = 0; i < freeQuarks.length; i++) {
+      for (let j = i + 1; j < freeQuarks.length; j++) {
+        for (let k = j + 1; k < freeQuarks.length; k++) {
+          const p1 = freeQuarks[i];
+          const p2 = freeQuarks[j];
+          const p3 = freeQuarks[k];
+
+          const dist12 = Math.hypot(p1.x - p2.x, p1.y - p2.y);
+          const dist13 = Math.hypot(p1.x - p3.x, p1.y - p3.y);
+          const dist23 = Math.hypot(p2.x - p3.x, p2.y - p3.y);
+
+          if (dist12 < 40 && dist13 < 40 && dist23 < 40) {
+            const types = [p1.type, p2.type, p3.type].sort();
+            
+            // Check for proton: 2 up + 1 down
+            if (types[0] === "quark-down" && types[1] === "quark-up" && types[2] === "quark-up") {
+              formComposite("proton", [p1, p2, p3]);
+              toast.success("Proton formed! ⚛️");
+              return;
+            }
+            
+            // Check for neutron: 1 up + 2 down
+            if (types[0] === "quark-down" && types[1] === "quark-down" && types[2] === "quark-up") {
+              formComposite("neutron", [p1, p2, p3]);
+              toast.success("Neutron formed! ⚛️");
+              return;
+            }
+          }
+        }
+      }
+    }
+  };
+
+  const formComposite = (type: "proton" | "neutron", quarks: Particle[]) => {
+    const centerX = quarks.reduce((sum, q) => sum + q.x, 0) / 3;
+    const centerY = quarks.reduce((sum, q) => sum + q.y, 0) / 3;
+
+    const composite: CompositeParticle = {
+      id: nextIdRef.current++,
+      type,
+      x: centerX,
+      y: centerY,
+      vx: 0,
+      vy: 0,
+      quarks: quarks.map(q => q.id),
+      radius: 30,
+    };
+
+    compositesRef.current.push(composite);
+    
+    // Mark quarks as part of composite
+    quarks.forEach(q => {
+      q.partOfComposite = composite.id;
+    });
+
+    updateStats();
+  };
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -46,178 +157,105 @@ export const QuantumSimulator = ({ mode }: QuantumSimulatorProps) => {
     canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
 
-    // Initialize particles based on mode
-    let initialParticles: Particle[] = [];
-    
-    if (mode === "quarks") {
-      // Show individual quarks and electrons
-      for (let i = 0; i < 4; i++) {
-        initialParticles.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 1,
-          vy: (Math.random() - 0.5) * 1,
-          type: "quark-up",
-          radius: particleConfig["quark-up"].radius,
-          charge: particleConfig["quark-up"].charge,
-        });
-      }
-      for (let i = 0; i < 4; i++) {
-        initialParticles.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 1,
-          vy: (Math.random() - 0.5) * 1,
-          type: "quark-down",
-          radius: particleConfig["quark-down"].radius,
-          charge: particleConfig["quark-down"].charge,
-        });
-      }
-      for (let i = 0; i < 3; i++) {
-        initialParticles.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 2,
-          vy: (Math.random() - 0.5) * 2,
-          type: "electron",
-          radius: particleConfig["electron"].radius,
-          charge: particleConfig["electron"].charge,
-        });
-      }
-    } else if (mode === "formation") {
-      // Show quark triplets forming protons and neutrons
-      // Proton (2 up, 1 down)
-      initialParticles.push(
-        {
-          x: canvas.width * 0.3,
-          y: canvas.height * 0.5,
-          vx: 0, vy: 0,
-          type: "quark-up",
-          radius: particleConfig["quark-up"].radius,
-          charge: particleConfig["quark-up"].charge,
-          bound: true,
-          boundTo: [1, 2],
-        },
-        {
-          x: canvas.width * 0.3 + 20,
-          y: canvas.height * 0.5,
-          vx: 0, vy: 0,
-          type: "quark-up",
-          radius: particleConfig["quark-up"].radius,
-          charge: particleConfig["quark-up"].charge,
-          bound: true,
-          boundTo: [0, 2],
-        },
-        {
-          x: canvas.width * 0.3 + 10,
-          y: canvas.height * 0.5 + 17,
-          vx: 0, vy: 0,
-          type: "quark-down",
-          radius: particleConfig["quark-down"].radius,
-          charge: particleConfig["quark-down"].charge,
-          bound: true,
-          boundTo: [0, 1],
-        }
-      );
-      
-      // Neutron (1 up, 2 down)
-      initialParticles.push(
-        {
-          x: canvas.width * 0.7,
-          y: canvas.height * 0.5,
-          vx: 0, vy: 0,
-          type: "quark-up",
-          radius: particleConfig["quark-up"].radius,
-          charge: particleConfig["quark-up"].charge,
-          bound: true,
-          boundTo: [4, 5],
-        },
-        {
-          x: canvas.width * 0.7 + 20,
-          y: canvas.height * 0.5,
-          vx: 0, vy: 0,
-          type: "quark-down",
-          radius: particleConfig["quark-down"].radius,
-          charge: particleConfig["quark-down"].charge,
-          bound: true,
-          boundTo: [3, 5],
-        },
-        {
-          x: canvas.width * 0.7 + 10,
-          y: canvas.height * 0.5 + 17,
-          vx: 0, vy: 0,
-          type: "quark-down",
-          radius: particleConfig["quark-down"].radius,
-          charge: particleConfig["quark-down"].charge,
-          bound: true,
-          boundTo: [3, 4],
-        }
-      );
-
-      // Add orbiting electrons
-      for (let i = 0; i < 2; i++) {
-        initialParticles.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 3,
-          vy: (Math.random() - 0.5) * 3,
-          type: "electron",
-          radius: particleConfig["electron"].radius,
-          charge: particleConfig["electron"].charge,
-        });
-      }
-    } else if (mode === "forces") {
-      // Show force carriers (gluons) between quarks
-      for (let i = 0; i < 6; i++) {
-        initialParticles.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 1,
-          vy: (Math.random() - 0.5) * 1,
-          type: i % 3 === 0 ? "gluon" : i % 2 === 0 ? "quark-up" : "quark-down",
-          radius: i % 3 === 0 ? particleConfig["gluon"].radius : particleConfig["quark-up"].radius,
-          charge: i % 3 === 0 ? 0 : i % 2 === 0 ? 2/3 : -1/3,
-        });
-      }
-    }
-
-    particlesRef.current = initialParticles;
-    setParticles(initialParticles);
-
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      particlesRef.current.forEach((particle, i) => {
-        // Physics
-        if (!particle.bound) {
-          // Mouse interaction
-          if (mouseRef.current.active) {
-            const dx = mouseRef.current.x - particle.x;
-            const dy = mouseRef.current.y - particle.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            
-            if (distance < 150) {
-              const force = (150 - distance) / 150;
-              particle.vx += (dx / distance) * force * 0.3;
-              particle.vy += (dy / distance) * force * 0.3;
+
+      // Draw composite particles first (protons/neutrons)
+      compositesRef.current.forEach(composite => {
+        const compositeQuarks = particlesRef.current.filter(p => 
+          composite.quarks.includes(p.id)
+        );
+
+        if (compositeQuarks.length === 3) {
+          // Update composite position based on quarks
+          composite.x = compositeQuarks.reduce((sum, q) => sum + q.x, 0) / 3;
+          composite.y = compositeQuarks.reduce((sum, q) => sum + q.y, 0) / 3;
+
+          // Draw composite outer circle
+          const config = particleConfig[composite.type];
+          ctx.beginPath();
+          ctx.arc(composite.x, composite.y, composite.radius, 0, Math.PI * 2);
+          ctx.fillStyle = config.color.replace(")", ", 0.2)").replace("hsl", "hsla");
+          ctx.strokeStyle = config.color;
+          ctx.lineWidth = 3;
+          ctx.fill();
+          ctx.stroke();
+
+          // Draw gluon bonds between quarks
+          for (let i = 0; i < compositeQuarks.length; i++) {
+            for (let j = i + 1; j < compositeQuarks.length; j++) {
+              ctx.beginPath();
+              ctx.moveTo(compositeQuarks[i].x, compositeQuarks[i].y);
+              ctx.lineTo(compositeQuarks[j].x, compositeQuarks[j].y);
+              ctx.strokeStyle = "hsla(60, 100%, 60%, 0.7)";
+              ctx.lineWidth = 2;
+              ctx.stroke();
             }
           }
 
-          // Electromagnetic force between charged particles
+          // Draw label
+          if (showLabels) {
+            ctx.fillStyle = "hsl(var(--foreground))";
+            ctx.font = "bold 14px system-ui";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(config.label, composite.x, composite.y - composite.radius - 15);
+          }
+
+          // Position quarks in triangle formation
+          const time = Date.now() * 0.0005;
+          compositeQuarks.forEach((quark, idx) => {
+            const angle = (idx * Math.PI * 2 / 3) + time;
+            const orbitRadius = 15;
+            quark.x = composite.x + Math.cos(angle) * orbitRadius;
+            quark.y = composite.y + Math.sin(angle) * orbitRadius;
+            quark.vx = 0;
+            quark.vy = 0;
+          });
+        }
+      });
+
+      // Draw gluon connections between nearby free quarks
+      const freeQuarks = particlesRef.current.filter(p => !p.partOfComposite);
+      freeQuarks.forEach((particle, i) => {
+        freeQuarks.forEach((other, j) => {
+          if (i >= j) return;
+          const dx = other.x - particle.x;
+          const dy = other.y - particle.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          
+          if (distance < 80) {
+            ctx.beginPath();
+            ctx.moveTo(particle.x, particle.y);
+            ctx.lineTo(other.x, other.y);
+            const alpha = 1 - distance / 80;
+            ctx.strokeStyle = `hsla(60, 100%, 60%, ${alpha * 0.5})`;
+            ctx.lineWidth = 1;
+            ctx.setLineDash([3, 3]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+          }
+        });
+      });
+
+      // Draw and update particles
+      particlesRef.current.forEach((particle, i) => {
+        if (!particle.partOfComposite && !particle.dragging) {
+          // Electromagnetic force between free quarks
           particlesRef.current.forEach((other, j) => {
-            if (i >= j || other.bound) return;
+            if (i >= j || other.partOfComposite || other.dragging) return;
             
             const dx = other.x - particle.x;
             const dy = other.y - particle.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
             
-            if (distance < 120 && distance > 0) {
+            if (distance < 100 && distance > 20) {
               const force = (particle.charge * other.charge) / (distance * distance);
-              const fx = (dx / distance) * force * -2;
-              const fy = (dy / distance) * force * -2;
+              const fx = (dx / distance) * force * -1.5;
+              const fy = (dy / distance) * force * -1.5;
               
               particle.vx += fx;
               particle.vy += fy;
@@ -239,47 +277,8 @@ export const QuantumSimulator = ({ mode }: QuantumSimulatorProps) => {
           }
 
           // Friction
-          particle.vx *= 0.98;
-          particle.vy *= 0.98;
-        } else {
-          // Bound particles orbit slightly
-          const time = Date.now() * 0.001;
-          const offset = i * (Math.PI * 2 / 3);
-          particle.x += Math.cos(time + offset) * 0.5;
-          particle.y += Math.sin(time + offset) * 0.5;
-        }
-
-        // Draw connections for bound particles or close particles
-        if (particle.bound && particle.boundTo) {
-          particle.boundTo.forEach(targetIndex => {
-            const target = particlesRef.current[targetIndex];
-            ctx.beginPath();
-            ctx.moveTo(particle.x, particle.y);
-            ctx.lineTo(target.x, target.y);
-            ctx.strokeStyle = "hsla(60, 100%, 60%, 0.6)";
-            ctx.lineWidth = 2;
-            ctx.stroke();
-          });
-        } else if (mode === "forces") {
-          // Show force carrier exchanges
-          particlesRef.current.forEach((other, j) => {
-            if (i >= j) return;
-            const dx = other.x - particle.x;
-            const dy = other.y - particle.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            
-            if (distance < 100 && (particle.type.includes("quark") || other.type.includes("quark"))) {
-              ctx.beginPath();
-              ctx.moveTo(particle.x, particle.y);
-              ctx.lineTo(other.x, other.y);
-              const alpha = 1 - distance / 100;
-              ctx.strokeStyle = `hsla(60, 100%, 60%, ${alpha * 0.4})`;
-              ctx.lineWidth = 1;
-              ctx.setLineDash([5, 5]);
-              ctx.stroke();
-              ctx.setLineDash([]);
-            }
-          });
+          particle.vx *= 0.97;
+          particle.vy *= 0.97;
         }
 
         // Draw particle
@@ -287,13 +286,13 @@ export const QuantumSimulator = ({ mode }: QuantumSimulatorProps) => {
         ctx.beginPath();
         ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
         ctx.fillStyle = config.color;
-        ctx.shadowBlur = 20;
+        ctx.shadowBlur = particle.dragging ? 25 : 15;
         ctx.shadowColor = config.color;
         ctx.fill();
         ctx.shadowBlur = 0;
 
-        // Draw charge indicator
-        if (particle.charge !== 0 && !particle.bound) {
+        // Draw charge indicator for free quarks
+        if (particle.charge !== 0 && !particle.partOfComposite) {
           ctx.beginPath();
           ctx.arc(particle.x, particle.y, particle.radius + 4, 0, Math.PI * 2);
           ctx.strokeStyle = particle.charge > 0 ? "hsla(10, 100%, 60%, 0.5)" : "hsla(200, 100%, 60%, 0.5)";
@@ -302,9 +301,9 @@ export const QuantumSimulator = ({ mode }: QuantumSimulatorProps) => {
         }
 
         // Draw labels
-        if (showLabels) {
+        if (showLabels && !particle.partOfComposite) {
           ctx.fillStyle = "hsl(var(--foreground))";
-          ctx.font = "bold 11px system-ui";
+          ctx.font = "bold 10px system-ui";
           ctx.textAlign = "center";
           ctx.textBaseline = "middle";
           ctx.fillText(config.label, particle.x, particle.y);
@@ -321,7 +320,29 @@ export const QuantumSimulator = ({ mode }: QuantumSimulatorProps) => {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [mode, showLabels]);
+  }, [showLabels]);
+
+  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    // Check if clicking on a free quark
+    const clickedParticle = particlesRef.current.find(p => {
+      if (p.partOfComposite) return false;
+      const dx = mouseX - p.x;
+      const dy = mouseY - p.y;
+      return Math.sqrt(dx * dx + dy * dy) < p.radius;
+    });
+
+    if (clickedParticle) {
+      draggedParticleRef.current = clickedParticle.id;
+      clickedParticle.dragging = true;
+    }
+  };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
@@ -331,22 +352,29 @@ export const QuantumSimulator = ({ mode }: QuantumSimulatorProps) => {
     mouseRef.current = {
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
-      active: true,
     };
+
+    if (draggedParticleRef.current !== null) {
+      const particle = particlesRef.current.find(p => p.id === draggedParticleRef.current);
+      if (particle) {
+        particle.x = mouseRef.current.x;
+        particle.y = mouseRef.current.y;
+        particle.vx = 0;
+        particle.vy = 0;
+      }
+    }
   };
 
-  const handleMouseLeave = () => {
-    mouseRef.current.active = false;
-  };
-
-  const getModeDescription = () => {
-    switch (mode) {
-      case "quarks":
-        return "Individual quarks and electrons exhibiting quantum behavior. Notice how opposite charges attract and like charges repel!";
-      case "formation":
-        return "Watch quarks combine into protons (2 up + 1 down) and neutrons (1 up + 2 down). Gluons bind them together!";
-      case "forces":
-        return "Force carriers (gluons) constantly exchange between quarks, creating the strong nuclear force!";
+  const handleMouseUp = () => {
+    if (draggedParticleRef.current !== null) {
+      const particle = particlesRef.current.find(p => p.id === draggedParticleRef.current);
+      if (particle) {
+        particle.dragging = false;
+      }
+      draggedParticleRef.current = null;
+      
+      // Check if quarks can form composite
+      checkQuarkProximity();
     }
   };
 
@@ -355,11 +383,11 @@ export const QuantumSimulator = ({ mode }: QuantumSimulatorProps) => {
       <div className="flex justify-between items-start mb-4">
         <div>
           <h3 className="text-xl font-bold text-foreground mb-2">
-            {mode === "quarks" && "Quantum Particle Behavior"}
-            {mode === "formation" && "Quark Confinement & Formation"}
-            {mode === "forces" && "Strong Nuclear Force"}
+            Interactive Particle Builder
           </h3>
-          <p className="text-sm text-muted-foreground">{getModeDescription()}</p>
+          <p className="text-sm text-muted-foreground">
+            Drag quarks together to form protons (2 up + 1 down) and neutrons (1 up + 2 down)!
+          </p>
         </div>
         <Button 
           variant="outline" 
@@ -370,37 +398,40 @@ export const QuantumSimulator = ({ mode }: QuantumSimulatorProps) => {
         </Button>
       </div>
 
-      <div className="mb-4 flex flex-wrap gap-2">
-        <Badge variant="secondary" className="gap-1">
+      <div className="mb-4 flex flex-wrap gap-2 items-center">
+        <Button onClick={() => addQuark("quark-up")} size="sm" className="gap-2">
           <div className="w-3 h-3 rounded-full" style={{ backgroundColor: particleConfig["quark-up"].color }} />
-          Up Quark (+2/3)
-        </Badge>
-        <Badge variant="secondary" className="gap-1">
+          Add Up Quark
+        </Button>
+        <Button onClick={() => addQuark("quark-down")} size="sm" variant="secondary" className="gap-2">
           <div className="w-3 h-3 rounded-full" style={{ backgroundColor: particleConfig["quark-down"].color }} />
-          Down Quark (-1/3)
-        </Badge>
-        <Badge variant="secondary" className="gap-1">
-          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: particleConfig.electron.color }} />
-          Electron (-1)
-        </Badge>
-        {mode === "forces" && (
-          <Badge variant="secondary" className="gap-1">
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: particleConfig.gluon.color }} />
-            Gluon (force carrier)
-          </Badge>
-        )}
+          Add Down Quark
+        </Button>
+        <Button onClick={resetSimulation} size="sm" variant="outline">
+          Reset
+        </Button>
+        <div className="ml-auto flex gap-3 text-sm">
+          <Badge variant="default">Protons: {stats.protons}</Badge>
+          <Badge variant="secondary">Neutrons: {stats.neutrons}</Badge>
+          <Badge variant="outline">Free Quarks: {stats.freeQuarks}</Badge>
+        </div>
       </div>
 
       <canvas
         ref={canvasRef}
-        className="w-full h-80 rounded-lg bg-background/80 cursor-pointer border border-border"
+        className="w-full h-96 rounded-lg bg-background/80 cursor-grab active:cursor-grabbing border border-border"
+        onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
       />
       
-      <p className="text-xs text-muted-foreground mt-3 text-center">
-        Move your mouse over the simulation to interact with particles!
-      </p>
+      <div className="mt-4 p-3 bg-muted/50 rounded-lg">
+        <p className="text-xs text-muted-foreground text-center">
+          <strong>How to play:</strong> Click "Add Up/Down Quark" to spawn quarks, then drag them together. 
+          Get 3 quarks close enough and they'll combine! Proton = 2 up + 1 down. Neutron = 1 up + 2 down.
+        </p>
+      </div>
     </Card>
   );
 };

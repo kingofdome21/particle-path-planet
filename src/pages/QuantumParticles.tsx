@@ -7,7 +7,6 @@ import { Quiz } from "@/components/Quiz";
 import { Link } from "react-router-dom";
 import { ArrowRight, BookOpen, Atom, Waves, Zap } from "lucide-react";
 import { quantumQuiz } from "@/data/quizData";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const QuantumParticles = () => {
   const [showQuiz, setShowQuiz] = useState(false);
@@ -73,22 +72,7 @@ const QuantumParticles = () => {
           ))}
         </div>
 
-        <Tabs defaultValue="quarks" className="mb-12">
-          <TabsList className="grid w-full grid-cols-3 mb-6">
-            <TabsTrigger value="quarks">Quantum Behavior</TabsTrigger>
-            <TabsTrigger value="formation">Formation</TabsTrigger>
-            <TabsTrigger value="forces">Strong Force</TabsTrigger>
-          </TabsList>
-          <TabsContent value="quarks">
-            <QuantumSimulator mode="quarks" />
-          </TabsContent>
-          <TabsContent value="formation">
-            <QuantumSimulator mode="formation" />
-          </TabsContent>
-          <TabsContent value="forces">
-            <QuantumSimulator mode="forces" />
-          </TabsContent>
-        </Tabs>
+        <QuantumSimulator />
 
         <Card className="p-8 bg-card/50 backdrop-blur border-border mb-8">
           <div className="flex items-center gap-3 mb-4">
