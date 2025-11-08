@@ -195,9 +195,9 @@ export const LearningChatbot = () => {
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask about particles, atoms, or climate..."
             disabled={isLoading}
-            className="flex-1"
+            className="flex-1 text-sm overflow-hidden text-ellipsis"
           />
-          <Button type="submit" size="icon" disabled={isLoading || !input.trim()}>
+          <Button type="submit" size="icon" disabled={isLoading || !input.trim()} className="shrink-0">
             <Send className="w-4 h-4" />
           </Button>
         </form>
