@@ -98,10 +98,27 @@ const GreenhouseGases = () => {
                 When infrared radiation from Earth's surface encounters greenhouse gas molecules, 
                 it transfers energy that causes specific vibrational and rotational modes in the molecule.
               </p>
-              <p>
+              <p className="mb-3">
                 Not all molecules trap heat equally. The key is{" "}
                 <strong className="text-foreground">molecular structure and dipole moments</strong>:
               </p>
+              
+              <div className="bg-primary/10 p-4 rounded-lg border border-primary/30 mb-3">
+                <h4 className="font-semibold text-foreground mb-2">What is a Dipole Moment?</h4>
+                <p className="text-sm mb-2">
+                  A <strong className="text-foreground">dipole moment</strong> occurs when a molecule has an uneven distribution of electrical charge. 
+                  Think of it as one end of the molecule being slightly positive (δ+) and the other slightly negative (δ-).
+                </p>
+                <p className="text-sm mb-2">
+                  This happens because atoms have different <strong className="text-foreground">electronegativities</strong>—their ability to attract electrons. 
+                  For example, in H₂O, oxygen is much more electronegative than hydrogen, pulling electrons toward itself and creating a dipole.
+                </p>
+                <p className="text-sm">
+                  <strong className="text-foreground">Why it matters:</strong> When a molecule with a dipole moment vibrates or rotates, 
+                  it can interact with the oscillating electric field of infrared radiation. This allows it to absorb that energy—trapping heat. 
+                  Symmetric molecules like N₂ and O₂ have no net dipole moment, so they can't absorb infrared radiation effectively.
+                </p>
+              </div>
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">

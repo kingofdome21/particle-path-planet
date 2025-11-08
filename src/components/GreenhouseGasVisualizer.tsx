@@ -314,6 +314,12 @@ export const GreenhouseGasVisualizer = () => {
     setMoleculeCounts(prev => ({ ...prev, [type]: prev[type] + 1 }));
   };
 
+  const clearAllMolecules = () => {
+    moleculesRef.current = [];
+    setMoleculeCounts({ CO2: 0, CH4: 0, N2O: 0, H2O: 0 });
+    setTemperature(15);
+  };
+
   return (
     <Card className="p-6 bg-card/50 backdrop-blur border-border overflow-hidden">
       <div className="mb-4">
@@ -335,6 +341,15 @@ export const GreenhouseGasVisualizer = () => {
         </Button>
         <Button onClick={() => addMolecule("H2O")} size="sm" variant="outline" className="gap-2">
           Add H₂O <Badge variant="secondary">{moleculeCounts.H2O}</Badge>
+        </Button>
+        <div className="flex-grow" />
+        <Button
+          onClick={clearAllMolecules}
+          size="sm"
+          variant="destructive"
+          disabled={moleculesRef.current.length === 0}
+        >
+          Clear All
         </Button>
         <Button
           onClick={() => setShowInfrared(!showInfrared)}
@@ -369,7 +384,8 @@ export const GreenhouseGasVisualizer = () => {
       </div>
 
       <p className="text-xs text-muted-foreground mt-4 text-center">
-        Orange rays represent infrared radiation. Watch molecules vibrate and rotate when they absorb energy!
+        Orange rays represent infrared radiation. Watch molecules vibrate and rotate when they absorb energy! 
+        <span className="text-foreground font-medium">Try clearing all molecules and adding only one type to observe its specific behavior.</span>
       </p>
     </Card>
   );
