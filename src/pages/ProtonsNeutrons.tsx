@@ -2,7 +2,6 @@ import { useState } from "react";
 import { SectionLayout } from "@/components/SectionLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { InteractiveParticle } from "@/components/InteractiveParticle";
 import { Quiz } from "@/components/Quiz";
 import { Link } from "react-router-dom";
 import { ArrowRight, ArrowLeft, BookOpen } from "lucide-react";
@@ -90,14 +89,7 @@ const ProtonsNeutrons = () => {
           </div>
         </Card>
 
-        <InteractiveParticle
-          title="Nucleon Interaction Simulation"
-          description="See how protons and neutrons behave in the nucleus! The particles represent nucleons held together by the strong force."
-          particleCount={15}
-          particleColor="hsl(10, 90%, 60%)"
-        />
-
-        <Card className="p-8 bg-gradient-to-r from-card/50 to-muted/30 backdrop-blur border-border my-8">
+        <Card className="p-8 bg-gradient-to-r from-card/50 to-muted/30 backdrop-blur border-border mb-8">
           <h2 className="text-2xl font-bold mb-4 text-foreground">Building the Nucleus</h2>
           <p className="text-muted-foreground mb-4">
             Protons and neutrons cluster together in the atomic nucleus, held by the residual
