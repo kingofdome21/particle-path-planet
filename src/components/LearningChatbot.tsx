@@ -157,8 +157,8 @@ export const LearningChatbot = () => {
           <X className="w-4 h-4" />
         </Button>
       </CardHeader>
-      <CardContent className="flex-1 flex flex-col p-0">
-        <ScrollArea className="flex-1 p-4" ref={scrollRef}>
+      <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
+        <ScrollArea className="flex-1 p-4 h-full" ref={scrollRef}>
           <div className="space-y-4">
             {messages.map((message, index) => (
               <div
