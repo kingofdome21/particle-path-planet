@@ -3,8 +3,21 @@ import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { toast } from "sonner";
+import { Info, Sparkles, Zap } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
 
-type ParticleType = "quark-up" | "quark-down" | "electron" | "gluon" | "proton" | "neutron";
+type ParticleType = "quark-up" | "quark-down" | "quark-strange" | "quark-charm" | "quark-top" | "quark-bottom" | "electron" | "muon" | "tau" | "gluon" | "photon" | "proton" | "neutron";
+
+interface ParticleInfo {
+  name: string;
+  symbol: string;
+  charge: number;
+  mass: string;
+  spin: string;
+  family: string;
+  description: string;
+  discovered: string;
+}
 
 interface Particle {
   id: number;
@@ -33,12 +46,132 @@ interface CompositeParticle {
 interface QuantumSimulatorProps {}
 
 const particleConfig = {
-  "quark-up": { color: "hsl(280, 100%, 60%)", label: "Up", charge: 2/3, radius: 6 },
-  "quark-down": { color: "hsl(340, 100%, 60%)", label: "Down", charge: -1/3, radius: 6 },
+  "quark-up": { color: "hsl(280, 100%, 60%)", label: "u", charge: 2/3, radius: 6 },
+  "quark-down": { color: "hsl(340, 100%, 60%)", label: "d", charge: -1/3, radius: 6 },
+  "quark-strange": { color: "hsl(120, 100%, 50%)", label: "s", charge: -1/3, radius: 6 },
+  "quark-charm": { color: "hsl(200, 100%, 60%)", label: "c", charge: 2/3, radius: 6 },
+  "quark-top": { color: "hsl(30, 100%, 60%)", label: "t", charge: 2/3, radius: 6 },
+  "quark-bottom": { color: "hsl(270, 100%, 40%)", label: "b", charge: -1/3, radius: 6 },
   "electron": { color: "hsl(180, 100%, 50%)", label: "e⁻", charge: -1, radius: 8 },
+  "muon": { color: "hsl(190, 100%, 45%)", label: "μ⁻", charge: -1, radius: 8 },
+  "tau": { color: "hsl(200, 100%, 40%)", label: "τ⁻", charge: -1, radius: 8 },
   "gluon": { color: "hsl(60, 100%, 60%)", label: "g", charge: 0, radius: 4 },
+  "photon": { color: "hsl(50, 100%, 70%)", label: "γ", charge: 0, radius: 5 },
   "proton": { color: "hsl(10, 100%, 55%)", label: "p⁺", charge: 1, radius: 14 },
   "neutron": { color: "hsl(200, 30%, 60%)", label: "n", charge: 0, radius: 14 },
+};
+
+const particleDatabase: Record<string, ParticleInfo> = {
+  "quark-up": {
+    name: "Up Quark",
+    symbol: "u",
+    charge: 2/3,
+    mass: "~2.2 MeV/c²",
+    spin: "1/2",
+    family: "Quarks (1st generation)",
+    description: "The lightest quark. Combines with down quarks to form protons and neutrons. Essential building block of ordinary matter.",
+    discovered: "1968 (SLAC)",
+  },
+  "quark-down": {
+    name: "Down Quark",
+    symbol: "d",
+    charge: -1/3,
+    mass: "~4.7 MeV/c²",
+    spin: "1/2",
+    family: "Quarks (1st generation)",
+    description: "Second lightest quark. Partners with up quarks in protons and neutrons. Critical for atomic nuclei stability.",
+    discovered: "1968 (SLAC)",
+  },
+  "quark-strange": {
+    name: "Strange Quark",
+    symbol: "s",
+    charge: -1/3,
+    mass: "~95 MeV/c²",
+    spin: "1/2",
+    family: "Quarks (2nd generation)",
+    description: "Heavier cousin of the down quark. Found in exotic particles like kaons. Gets its name from the 'strange' properties of particles containing it.",
+    discovered: "1947 (cosmic rays)",
+  },
+  "quark-charm": {
+    name: "Charm Quark",
+    symbol: "c",
+    charge: 2/3,
+    mass: "~1.28 GeV/c²",
+    spin: "1/2",
+    family: "Quarks (2nd generation)",
+    description: "Heavier partner of the up quark. Its discovery in 1974 (November Revolution) confirmed quark theory and won Nobel Prize.",
+    discovered: "1974 (BNL & SLAC)",
+  },
+  "quark-top": {
+    name: "Top Quark",
+    symbol: "t",
+    charge: 2/3,
+    mass: "~173 GeV/c²",
+    spin: "1/2",
+    family: "Quarks (3rd generation)",
+    description: "Heaviest known elementary particle—about as heavy as a gold atom! So heavy it decays before forming bound states. Last quark discovered.",
+    discovered: "1995 (Fermilab)",
+  },
+  "quark-bottom": {
+    name: "Bottom Quark",
+    symbol: "b",
+    charge: -1/3,
+    mass: "~4.18 GeV/c²",
+    spin: "1/2",
+    family: "Quarks (3rd generation)",
+    description: "Also called beauty quark. Second heaviest quark. Forms bottom mesons used to study CP violation and matter-antimatter asymmetry.",
+    discovered: "1977 (Fermilab)",
+  },
+  "electron": {
+    name: "Electron",
+    symbol: "e⁻",
+    charge: -1,
+    mass: "0.511 MeV/c²",
+    spin: "1/2",
+    family: "Leptons (1st generation)",
+    description: "First elementary particle discovered! Orbits atomic nuclei and enables all of chemistry. Powers electricity and electronics.",
+    discovered: "1897 (J.J. Thomson)",
+  },
+  "muon": {
+    name: "Muon",
+    symbol: "μ⁻",
+    charge: -1,
+    mass: "105.7 MeV/c²",
+    spin: "1/2",
+    family: "Leptons (2nd generation)",
+    description: "Heavier cousin of the electron (207× heavier). Unstable, decays in 2.2 microseconds. Created by cosmic rays hitting atmosphere.",
+    discovered: "1936 (Carl Anderson)",
+  },
+  "tau": {
+    name: "Tau",
+    symbol: "τ⁻",
+    charge: -1,
+    mass: "1.777 GeV/c²",
+    spin: "1/2",
+    family: "Leptons (3rd generation)",
+    description: "Heaviest lepton (3,500× heavier than electron). Extremely unstable, decays almost immediately. Only created in high-energy collisions.",
+    discovered: "1975 (Martin Perl)",
+  },
+  "gluon": {
+    name: "Gluon",
+    symbol: "g",
+    charge: 0,
+    mass: "0 (massless)",
+    spin: "1",
+    family: "Force Carriers (Bosons)",
+    description: "Carries the strong nuclear force between quarks. Unlike photons, gluons interact with each other, making the strong force incredibly complex.",
+    discovered: "1979 (DESY)",
+  },
+  "photon": {
+    name: "Photon",
+    symbol: "γ",
+    charge: 0,
+    mass: "0 (massless)",
+    spin: "1",
+    family: "Force Carriers (Bosons)",
+    description: "Particle of light! Mediates electromagnetic force. Has no mass but carries energy and momentum. Speed limit of the universe.",
+    discovered: "1905 (Einstein)",
+  },
 };
 
 export const QuantumSimulator = ({}: QuantumSimulatorProps) => {
@@ -50,11 +183,19 @@ export const QuantumSimulator = ({}: QuantumSimulatorProps) => {
   const animationRef = useRef<number>();
   const [showLabels, setShowLabels] = useState(true);
   const [stats, setStats] = useState({ protons: 0, neutrons: 0, freeQuarks: 0 });
+  const [selectedParticleInfo, setSelectedParticleInfo] = useState<string | null>(null);
+  const [showExplorer, setShowExplorer] = useState(false);
   const nextIdRef = useRef(0);
 
-  const addQuark = (type: "quark-up" | "quark-down") => {
+  const addParticle = (type: ParticleType) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+
+    // Don't allow adding composite particles directly
+    if (type === "proton" || type === "neutron") {
+      toast.error("Build composites by combining quarks!");
+      return;
+    }
 
     const newParticle: Particle = {
       id: nextIdRef.current++,
@@ -69,6 +210,7 @@ export const QuantumSimulator = ({}: QuantumSimulatorProps) => {
 
     particlesRef.current.push(newParticle);
     updateStats();
+    toast.success(`${particleDatabase[type]?.name || type} spawned!`);
   };
 
   const resetSimulation = () => {
@@ -378,44 +520,193 @@ export const QuantumSimulator = ({}: QuantumSimulatorProps) => {
     }
   };
 
-  return (
-    <Card className="p-6 bg-card/50 backdrop-blur border-border">
-      <div className="flex justify-between items-start mb-4">
-        <div>
-          <h3 className="text-xl font-bold text-foreground mb-2">
-            Interactive Particle Builder
-          </h3>
-          <p className="text-sm text-muted-foreground">
-            Drag quarks together to form protons (2 up + 1 down) and neutrons (1 up + 2 down)!
-          </p>
-        </div>
-        <Button 
-          variant="outline" 
-          size="sm"
-          onClick={() => setShowLabels(!showLabels)}
-        >
-          {showLabels ? "Hide Labels" : "Show Labels"}
-        </Button>
-      </div>
+  const particleCategories = {
+    quarks: ["quark-up", "quark-down", "quark-strange", "quark-charm", "quark-top", "quark-bottom"],
+    leptons: ["electron", "muon", "tau"],
+    bosons: ["gluon", "photon"],
+  };
 
-      <div className="mb-4 flex flex-wrap gap-2 items-center">
-        <Button onClick={() => addQuark("quark-up")} size="sm" className="gap-2">
-          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: particleConfig["quark-up"].color }} />
-          Add Up Quark
-        </Button>
-        <Button onClick={() => addQuark("quark-down")} size="sm" variant="secondary" className="gap-2">
-          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: particleConfig["quark-down"].color }} />
-          Add Down Quark
-        </Button>
-        <Button onClick={resetSimulation} size="sm" variant="outline">
-          Reset
-        </Button>
-        <div className="ml-auto flex gap-3 text-sm">
-          <Badge variant="default">Protons: {stats.protons}</Badge>
-          <Badge variant="secondary">Neutrons: {stats.neutrons}</Badge>
-          <Badge variant="outline">Free Quarks: {stats.freeQuarks}</Badge>
+  return (
+    <>
+      <Card className="p-6 bg-card/50 backdrop-blur border-border">
+        <div className="flex justify-between items-start mb-4">
+          <div>
+            <h3 className="text-xl font-bold text-foreground mb-2">
+              Interactive Particle Builder
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              Explore particles and drag quarks together to form protons and neutrons!
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setShowExplorer(!showExplorer)}
+              className="gap-2"
+            >
+              <Sparkles className="w-4 h-4" />
+              {showExplorer ? "Hide" : "Explore"} Particles
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setShowLabels(!showLabels)}
+            >
+              {showLabels ? "Hide Labels" : "Show Labels"}
+            </Button>
+          </div>
         </div>
-      </div>
+
+        {showExplorer && (
+          <div className="mb-4 p-4 bg-background/50 rounded-lg border border-border">
+            <h4 className="font-semibold text-sm mb-3 flex items-center gap-2 text-foreground">
+              <Zap className="w-4 h-4" />
+              Particle Explorer
+            </h4>
+            
+            <div className="space-y-4">
+              <div>
+                <p className="text-xs font-semibold text-muted-foreground mb-2">QUARKS</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {particleCategories.quarks.map((type) => {
+                    const config = particleConfig[type as ParticleType];
+                    const info = particleDatabase[type];
+                    return (
+                      <div
+                        key={type}
+                        className="p-2 bg-card border border-border rounded hover:border-primary transition-colors cursor-pointer"
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <div
+                            className="w-4 h-4 rounded-full"
+                            style={{ backgroundColor: config.color, boxShadow: `0 0 10px ${config.color}` }}
+                          />
+                          <span className="text-xs font-bold">{info.name}</span>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="ml-auto h-5 w-5 p-0"
+                            onClick={() => setSelectedParticleInfo(type)}
+                          >
+                            <Info className="w-3 h-3" />
+                          </Button>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="w-full text-xs h-6"
+                          onClick={() => addParticle(type as ParticleType)}
+                        >
+                          Spawn
+                        </Button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs font-semibold text-muted-foreground mb-2">LEPTONS</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {particleCategories.leptons.map((type) => {
+                    const config = particleConfig[type as ParticleType];
+                    const info = particleDatabase[type];
+                    return (
+                      <div
+                        key={type}
+                        className="p-2 bg-card border border-border rounded hover:border-primary transition-colors cursor-pointer"
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <div
+                            className="w-4 h-4 rounded-full"
+                            style={{ backgroundColor: config.color, boxShadow: `0 0 10px ${config.color}` }}
+                          />
+                          <span className="text-xs font-bold">{info.name}</span>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="ml-auto h-5 w-5 p-0"
+                            onClick={() => setSelectedParticleInfo(type)}
+                          >
+                            <Info className="w-3 h-3" />
+                          </Button>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="w-full text-xs h-6"
+                          onClick={() => addParticle(type as ParticleType)}
+                        >
+                          Spawn
+                        </Button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs font-semibold text-muted-foreground mb-2">FORCE CARRIERS</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {particleCategories.bosons.map((type) => {
+                    const config = particleConfig[type as ParticleType];
+                    const info = particleDatabase[type];
+                    return (
+                      <div
+                        key={type}
+                        className="p-2 bg-card border border-border rounded hover:border-primary transition-colors cursor-pointer"
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <div
+                            className="w-4 h-4 rounded-full"
+                            style={{ backgroundColor: config.color, boxShadow: `0 0 10px ${config.color}` }}
+                          />
+                          <span className="text-xs font-bold">{info.name}</span>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="ml-auto h-5 w-5 p-0"
+                            onClick={() => setSelectedParticleInfo(type)}
+                          >
+                            <Info className="w-3 h-3" />
+                          </Button>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="w-full text-xs h-6"
+                          onClick={() => addParticle(type as ParticleType)}
+                        >
+                          Spawn
+                        </Button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="mb-4 flex flex-wrap gap-2 items-center">
+          <Button onClick={() => addParticle("quark-up")} size="sm" className="gap-2">
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: particleConfig["quark-up"].color }} />
+            Add Up Quark
+          </Button>
+          <Button onClick={() => addParticle("quark-down")} size="sm" variant="secondary" className="gap-2">
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: particleConfig["quark-down"].color }} />
+            Add Down Quark
+          </Button>
+          <Button onClick={resetSimulation} size="sm" variant="outline">
+            Reset
+          </Button>
+          <div className="ml-auto flex gap-3 text-sm">
+            <Badge variant="default">Protons: {stats.protons}</Badge>
+            <Badge variant="secondary">Neutrons: {stats.neutrons}</Badge>
+            <Badge variant="outline">Free Particles: {stats.freeQuarks}</Badge>
+          </div>
+        </div>
 
       <canvas
         ref={canvasRef}
@@ -426,12 +717,75 @@ export const QuantumSimulator = ({}: QuantumSimulatorProps) => {
         onMouseLeave={handleMouseUp}
       />
       
-      <div className="mt-4 p-3 bg-muted/50 rounded-lg">
-        <p className="text-xs text-muted-foreground text-center">
-          <strong>How to play:</strong> Click "Add Up/Down Quark" to spawn quarks, then drag them together. 
-          Get 3 quarks close enough and they'll combine! Proton = 2 up + 1 down. Neutron = 1 up + 2 down.
-        </p>
-      </div>
-    </Card>
+        <div className="mt-4 p-3 bg-muted/50 rounded-lg">
+          <p className="text-xs text-muted-foreground text-center">
+            <strong>How to play:</strong> Click "Explore Particles" to see all available particles! Spawn quarks and drag them together. 
+            Get 3 quarks close and they'll combine! Proton = 2 up + 1 down. Neutron = 1 up + 2 down.
+          </p>
+        </div>
+      </Card>
+
+      <Dialog open={selectedParticleInfo !== null} onOpenChange={() => setSelectedParticleInfo(null)}>
+        <DialogContent className="max-w-lg">
+          {selectedParticleInfo && particleDatabase[selectedParticleInfo] && (
+            <>
+              <DialogHeader>
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold"
+                    style={{
+                      backgroundColor: particleConfig[selectedParticleInfo as ParticleType].color,
+                      boxShadow: `0 0 20px ${particleConfig[selectedParticleInfo as ParticleType].color}`,
+                    }}
+                  >
+                    {particleDatabase[selectedParticleInfo].symbol}
+                  </div>
+                  <div>
+                    <DialogTitle>{particleDatabase[selectedParticleInfo].name}</DialogTitle>
+                    <DialogDescription>{particleDatabase[selectedParticleInfo].family}</DialogDescription>
+                  </div>
+                </div>
+              </DialogHeader>
+              
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  {particleDatabase[selectedParticleInfo].description}
+                </p>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-3 bg-muted/50 rounded-lg">
+                    <p className="text-xs text-muted-foreground mb-1">Charge</p>
+                    <p className="font-semibold">{particleDatabase[selectedParticleInfo].charge}e</p>
+                  </div>
+                  <div className="p-3 bg-muted/50 rounded-lg">
+                    <p className="text-xs text-muted-foreground mb-1">Mass</p>
+                    <p className="font-semibold">{particleDatabase[selectedParticleInfo].mass}</p>
+                  </div>
+                  <div className="p-3 bg-muted/50 rounded-lg">
+                    <p className="text-xs text-muted-foreground mb-1">Spin</p>
+                    <p className="font-semibold">{particleDatabase[selectedParticleInfo].spin}</p>
+                  </div>
+                  <div className="p-3 bg-muted/50 rounded-lg">
+                    <p className="text-xs text-muted-foreground mb-1">Discovered</p>
+                    <p className="font-semibold text-xs">{particleDatabase[selectedParticleInfo].discovered}</p>
+                  </div>
+                </div>
+
+                <Button 
+                  className="w-full gap-2" 
+                  onClick={() => {
+                    addParticle(selectedParticleInfo as ParticleType);
+                    setSelectedParticleInfo(null);
+                  }}
+                >
+                  <Sparkles className="w-4 h-4" />
+                  Spawn {particleDatabase[selectedParticleInfo].name}
+                </Button>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
