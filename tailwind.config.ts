@@ -57,6 +57,12 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        quantum: "hsl(var(--quantum))",
+        "quantum-glow": "hsl(var(--quantum-glow))",
+        proton: "hsl(var(--proton))",
+        neutron: "hsl(var(--neutron))",
+        electron: "hsl(var(--electron))",
+        greenhouse: "hsl(var(--greenhouse))",
       },
       borderRadius: {
         lg: "var(--radius)",
