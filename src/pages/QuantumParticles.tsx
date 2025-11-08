@@ -2,11 +2,12 @@ import { useState } from "react";
 import { SectionLayout } from "@/components/SectionLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { InteractiveParticle } from "@/components/InteractiveParticle";
+import { QuantumSimulator } from "@/components/QuantumSimulator";
 import { Quiz } from "@/components/Quiz";
 import { Link } from "react-router-dom";
-import { ArrowRight, BookOpen } from "lucide-react";
+import { ArrowRight, BookOpen, Atom, Waves, Zap } from "lucide-react";
 import { quantumQuiz } from "@/data/quizData";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const QuantumParticles = () => {
   const [showQuiz, setShowQuiz] = useState(false);
@@ -72,37 +73,136 @@ const QuantumParticles = () => {
           ))}
         </div>
 
-        <InteractiveParticle
-          title="Quantum Particle Simulation"
-          description="Watch quarks and leptons interact! Move your mouse to influence the particles and see them form connections through force carriers."
-          particleCount={25}
-          particleColor="hsl(180, 100%, 50%)"
-        />
+        <Tabs defaultValue="quarks" className="mb-12">
+          <TabsList className="grid w-full grid-cols-3 mb-6">
+            <TabsTrigger value="quarks">Quantum Behavior</TabsTrigger>
+            <TabsTrigger value="formation">Formation</TabsTrigger>
+            <TabsTrigger value="forces">Strong Force</TabsTrigger>
+          </TabsList>
+          <TabsContent value="quarks">
+            <QuantumSimulator mode="quarks" />
+          </TabsContent>
+          <TabsContent value="formation">
+            <QuantumSimulator mode="formation" />
+          </TabsContent>
+          <TabsContent value="forces">
+            <QuantumSimulator mode="forces" />
+          </TabsContent>
+        </Tabs>
 
-        <Card className="p-8 bg-card/50 backdrop-blur border-border my-8">
+        <Card className="p-8 bg-card/50 backdrop-blur border-border mb-8">
+          <div className="flex items-center gap-3 mb-4">
+            <Waves className="w-8 h-8 text-quantum" />
+            <h2 className="text-2xl font-bold text-foreground">
+              The Quantum World
+            </h2>
+          </div>
+          <div className="space-y-4 text-muted-foreground">
+            <p>
+              At the quantum level, particles exhibit strange behaviors that completely defy our everyday
+              experience. The rules that govern atoms and subatomic particles are fundamentally different
+              from the classical physics we observe in our daily lives.
+            </p>
+            <p>
+              <strong className="text-foreground">Quarks</strong> are the fundamental building blocks of
+              matter. They come in six "flavors" (up, down, strange, charm, top, bottom) and three
+              "colors" (red, green, blue—though these aren't actual colors!). Due to a phenomenon called
+              <strong className="text-foreground"> color confinement</strong>, quarks never exist alone.
+              They are always bound together in groups of two (mesons) or three (baryons) by gluons,
+              which carry the strong force.
+            </p>
+            <p>
+              <strong className="text-foreground">Electrons</strong> belong to a family called leptons—particles
+              that don't experience the strong nuclear force. While quarks are trapped inside protons and neutrons,
+              electrons orbit freely around atomic nuclei. Their precise arrangement in these "shells" determines
+              all of chemistry and makes life possible.
+            </p>
+          </div>
+        </Card>
+
+        <div className="grid md:grid-cols-2 gap-6 mb-8">
+          <Card className="p-6 bg-card/50 backdrop-blur border-border">
+            <div className="flex items-center gap-2 mb-3">
+              <Atom className="w-6 h-6 text-electron" />
+              <h3 className="text-xl font-bold text-foreground">Superposition</h3>
+            </div>
+            <p className="text-sm text-muted-foreground mb-3">
+              Unlike classical objects that have definite properties, quantum particles exist in multiple
+              states simultaneously until measured. An electron can be in multiple positions at once,
+              only "choosing" a specific location when observed.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              This is famously illustrated by Schrödinger's cat thought experiment, where a cat in a box
+              is simultaneously alive and dead until you open the box and observe it.
+            </p>
+          </Card>
+
+          <Card className="p-6 bg-card/50 backdrop-blur border-border">
+            <div className="flex items-center gap-2 mb-3">
+              <Zap className="w-6 h-6 text-quantum" />
+              <h3 className="text-xl font-bold text-foreground">Quantum Entanglement</h3>
+            </div>
+            <p className="text-sm text-muted-foreground mb-3">
+              When particles become entangled, measuring one instantly affects the other, no matter how
+              far apart they are. Einstein called this "spooky action at a distance" because it seemed
+              to violate the speed of light limit.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              This isn't just theory—quantum entanglement is being used today in quantum computing and
+              quantum cryptography to process information in revolutionary new ways.
+            </p>
+          </Card>
+        </div>
+
+        <Card className="p-8 bg-card/50 backdrop-blur border-border mb-8">
           <h2 className="text-2xl font-bold mb-4 text-foreground">
-            The Quantum World
+            Wave-Particle Duality
           </h2>
           <div className="space-y-4 text-muted-foreground">
             <p>
-              At the quantum level, particles exhibit strange behaviors that defy our everyday
-              experience. They can exist in multiple states simultaneously (superposition) and
-              influence each other instantly across vast distances (entanglement).
+              One of the most mind-bending discoveries in physics is that all quantum particles exhibit
+              both wave and particle properties. An electron isn't just a tiny ball orbiting a nucleus—it's
+              also a wave spread out in space.
             </p>
             <p>
-              <strong className="text-foreground">Quarks</strong> come in six "flavors" and three
-              "colors." They never exist alone but always combine in groups through the strong
-              force carried by gluons.
+              The famous <strong className="text-foreground">double-slit experiment</strong> demonstrates
+              this perfectly: when you shoot electrons through two slits, they create an interference
+              pattern on a screen (like waves), even if you send them one at a time. But the moment you
+              try to detect which slit the electron went through, the interference pattern disappears and
+              they behave like particles again.
             </p>
             <p>
-              <strong className="text-foreground">Electrons</strong> are leptons—particles that
-              don't experience the strong force. Their movement in atoms creates the chemistry that
-              makes life possible.
+              This duality isn't limited to electrons. Light, which we often think of as a wave, also
+              comes in discrete packets called photons. Everything at the quantum scale is both wave and
+              particle—the universe at its smallest scales is fundamentally probabilistic and strange.
             </p>
+          </div>
+        </Card>
+
+        <Card className="p-8 bg-gradient-to-br from-card/80 to-quantum/10 backdrop-blur border-border mb-8">
+          <h2 className="text-2xl font-bold mb-4 text-foreground">
+            The Standard Model
+          </h2>
+          <div className="space-y-4 text-muted-foreground">
             <p>
-              <strong className="text-foreground">Wave-Particle Duality:</strong> All quantum
-              particles exhibit both wave and particle properties. An electron can behave like a
-              particle when detected, but shows wave interference patterns in double-slit experiments.
+              All the particles we've discussed are part of the <strong className="text-foreground">Standard
+              Model of Particle Physics</strong>—our current best theory of how the universe works at its
+              most fundamental level. The Standard Model describes:
+            </p>
+            <ul className="list-disc list-inside space-y-2 ml-4">
+              <li><strong className="text-foreground">6 quarks</strong> (up, down, strange, charm, top, bottom)</li>
+              <li><strong className="text-foreground">6 leptons</strong> (electron, muon, tau, and their neutrinos)</li>
+              <li><strong className="text-foreground">4 force carriers</strong> (photon, gluon, W/Z bosons)</li>
+              <li><strong className="text-foreground">The Higgs boson</strong>, which gives particles mass</li>
+            </ul>
+            <p>
+              Every experiment ever conducted confirms the Standard Model's predictions with incredible
+              precision. The discovery of the Higgs boson at CERN in 2012 was the final piece of the puzzle,
+              completing the model after decades of searching.
+            </p>
+            <p className="text-sm italic">
+              Yet the Standard Model isn't complete—it doesn't explain gravity, dark matter, or dark energy.
+              Physicists are searching for new physics beyond the Standard Model to answer these mysteries.
             </p>
           </div>
         </Card>
