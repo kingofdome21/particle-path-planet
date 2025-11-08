@@ -2,10 +2,10 @@ import { useState } from "react";
 import { SectionLayout } from "@/components/SectionLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { InteractiveParticle } from "@/components/InteractiveParticle";
+import { GreenhouseGasVisualizer } from "@/components/GreenhouseGasVisualizer";
 import { Quiz } from "@/components/Quiz";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Flame, CloudRain, Wind, BookOpen, Trophy } from "lucide-react";
+import { ArrowLeft, Flame, CloudRain, Wind, BookOpen, Trophy, TrendingUp, Factory, Leaf, AlertTriangle, Globe, Thermometer } from "lucide-react";
 import { greenhouseQuiz } from "@/data/quizData";
 import { useProgress } from "@/hooks/useProgress";
 
@@ -20,6 +20,9 @@ const GreenhouseGases = () => {
       icon: Flame,
       impact: "Accounts for ~75% of greenhouse gas emissions. Released by burning fossil fuels.",
       lifetime: "Hundreds to thousands of years in atmosphere",
+      concentration: "421 ppm (2023)",
+      preindustrial: "280 ppm",
+      sources: "Fossil fuel combustion, deforestation, cement production",
     },
     {
       name: "Methane",
@@ -28,6 +31,9 @@ const GreenhouseGases = () => {
       icon: CloudRain,
       impact: "28x more potent than CO₂ over 100 years. From agriculture and natural gas.",
       lifetime: "~12 years in atmosphere",
+      concentration: "1,923 ppb (2023)",
+      preindustrial: "722 ppb",
+      sources: "Agriculture (livestock), natural gas leaks, wetlands, landfills",
     },
     {
       name: "Nitrous Oxide",
@@ -36,6 +42,20 @@ const GreenhouseGases = () => {
       icon: Wind,
       impact: "265x more potent than CO₂. From agricultural fertilizers and industry.",
       lifetime: "~114 years in atmosphere",
+      concentration: "336 ppb (2023)",
+      preindustrial: "270 ppb",
+      sources: "Agricultural fertilizers, industrial processes, combustion",
+    },
+    {
+      name: "Water Vapor",
+      formula: "H₂O",
+      atoms: "2 Hydrogen + 1 Oxygen",
+      icon: CloudRain,
+      impact: "Most abundant greenhouse gas. Amplifies warming from other gases.",
+      lifetime: "~9 days in atmosphere",
+      concentration: "Variable (0.4-4%)",
+      preindustrial: "Natural cycle",
+      sources: "Evaporation from oceans, lakes, rivers; plant transpiration",
     },
   ];
 
@@ -44,45 +64,102 @@ const GreenhouseGases = () => {
       <div className="container mx-auto px-4 max-w-5xl">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">
-            The Greenhouse Effect
+            Greenhouse Gases & Climate Change
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            How specific molecules trap heat and drive climate change
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-4">
+            How molecular structure determines Earth's temperature and drives our climate crisis
           </p>
+          <div className="flex flex-wrap gap-4 justify-center items-center mt-6">
+            <div className="flex items-center gap-2 bg-destructive/10 px-4 py-2 rounded-lg border border-destructive/30">
+              <TrendingUp className="w-5 h-5 text-destructive" />
+              <span className="text-sm font-medium">+1.1°C since 1850</span>
+            </div>
+            <div className="flex items-center gap-2 bg-greenhouse/10 px-4 py-2 rounded-lg border border-greenhouse/30">
+              <Globe className="w-5 h-5 text-greenhouse" />
+              <span className="text-sm font-medium">421 ppm CO₂ in 2023</span>
+            </div>
+            <div className="flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-lg border border-primary/30">
+              <Thermometer className="w-5 h-5 text-primary" />
+              <span className="text-sm font-medium">Warmest decade on record</span>
+            </div>
+          </div>
         </div>
 
         <Card className="p-8 bg-gradient-to-br from-greenhouse/20 to-card/50 backdrop-blur border-greenhouse/30 mb-12">
-          <h2 className="text-2xl font-bold mb-4 text-foreground text-center">
-            How It Works
+          <h2 className="text-2xl font-bold mb-6 text-foreground text-center">
+            The Science of Heat Trapping
           </h2>
-          <div className="space-y-4 text-muted-foreground">
-            <p>
-              The greenhouse effect is fundamentally about{" "}
-              <strong className="text-foreground">molecular vibrations</strong>. When infrared
-              radiation (heat) from Earth's surface encounters certain molecules in the atmosphere,
-              it makes them vibrate, rotate, and stretch.
-            </p>
-            <p>
-              Not all molecules trap heat equally. The key is{" "}
-              <strong className="text-foreground">molecular structure</strong>:
-            </p>
-            <ul className="list-disc list-inside space-y-2 ml-4">
-              <li>
-                Molecules like N₂ and O₂ (diatomic) are symmetric and don't absorb infrared well
-              </li>
-              <li>
-                Molecules like CO₂, CH₄, and N₂O have asymmetric structures that efficiently
-                absorb and re-emit infrared radiation
-              </li>
-            </ul>
-            <p>
-              When these molecules absorb infrared radiation, they increase the atmosphere's
-              temperature, trapping heat that would otherwise escape to space.
-            </p>
+          <div className="space-y-6 text-muted-foreground">
+            <div>
+              <h3 className="text-lg font-semibold text-foreground mb-3">Molecular Vibrations & Infrared Absorption</h3>
+              <p className="mb-3">
+                The greenhouse effect is fundamentally about{" "}
+                <strong className="text-foreground">quantum mechanics at the molecular level</strong>. 
+                When infrared radiation from Earth's surface encounters greenhouse gas molecules, 
+                it transfers energy that causes specific vibrational and rotational modes in the molecule.
+              </p>
+              <p>
+                Not all molecules trap heat equally. The key is{" "}
+                <strong className="text-foreground">molecular structure and dipole moments</strong>:
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="bg-background/50 p-4 rounded-lg border border-border">
+                <h4 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                  <span className="text-red-500">✗</span> Non-Greenhouse Gases
+                </h4>
+                <ul className="space-y-2 text-sm">
+                  <li><strong>N₂ (78% of atmosphere):</strong> Symmetric, no dipole moment</li>
+                  <li><strong>O₂ (21% of atmosphere):</strong> Symmetric diatomic molecule</li>
+                  <li><strong>Ar (0.9% of atmosphere):</strong> Monatomic, no vibrations</li>
+                </ul>
+                <p className="mt-3 text-xs">These molecules cannot absorb infrared radiation effectively due to their symmetry.</p>
+              </div>
+
+              <div className="bg-background/50 p-4 rounded-lg border border-greenhouse/30">
+                <h4 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                  <span className="text-green-500">✓</span> Greenhouse Gases
+                </h4>
+                <ul className="space-y-2 text-sm">
+                  <li><strong>CO₂:</strong> Asymmetric stretching, bending modes</li>
+                  <li><strong>CH₄:</strong> Multiple asymmetric C-H stretching modes</li>
+                  <li><strong>N₂O:</strong> Asymmetric linear molecule</li>
+                  <li><strong>H₂O:</strong> Bent structure, strong dipole</li>
+                </ul>
+                <p className="mt-3 text-xs">These molecules have permanent or induced dipole moments that couple with infrared radiation.</p>
+              </div>
+            </div>
+
+            <div className="bg-muted/30 p-5 rounded-lg border border-greenhouse/20">
+              <h4 className="font-semibold text-foreground mb-3">The Energy Transfer Process</h4>
+              <ol className="space-y-2 text-sm list-decimal list-inside">
+                <li><strong>Solar radiation</strong> (mostly visible light) passes through the atmosphere and warms Earth's surface</li>
+                <li><strong>Earth re-radiates</strong> this energy as infrared radiation (heat)</li>
+                <li><strong>Greenhouse gas molecules absorb</strong> specific wavelengths of infrared radiation</li>
+                <li><strong>Molecules vibrate and rotate</strong> with increased energy</li>
+                <li><strong>Energy is re-emitted</strong> in all directions, including back toward Earth</li>
+                <li><strong>Net result:</strong> Heat is trapped in the lower atmosphere, warming the planet</li>
+              </ol>
+            </div>
+
+            <div className="bg-destructive/10 p-5 rounded-lg border border-destructive/30">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="w-6 h-6 text-destructive flex-shrink-0 mt-1" />
+                <div>
+                  <h4 className="font-semibold text-foreground mb-2">The Enhanced Greenhouse Effect</h4>
+                  <p className="text-sm">
+                    The natural greenhouse effect is essential for life—without it, Earth would be about 33°C colder. 
+                    However, human activities have increased atmospheric CO₂ by <strong className="text-foreground">50%</strong> since pre-industrial times, 
+                    enhancing the greenhouse effect beyond natural levels and causing rapid global warming.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </Card>
 
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {gases.map((gas) => {
             const Icon = gas.icon;
             return (
@@ -102,10 +179,19 @@ const GreenhouseGases = () => {
                     <strong className="text-foreground">Atoms:</strong> {gas.atoms}
                   </p>
                   <p>
+                    <strong className="text-foreground">Current:</strong> {gas.concentration}
+                  </p>
+                  <p>
+                    <strong className="text-foreground">Pre-1750:</strong> {gas.preindustrial}
+                  </p>
+                  <p>
                     <strong className="text-foreground">Impact:</strong> {gas.impact}
                   </p>
                   <p>
                     <strong className="text-foreground">Lifetime:</strong> {gas.lifetime}
+                  </p>
+                  <p className="text-xs pt-2 border-t border-border">
+                    <strong className="text-foreground">Sources:</strong> {gas.sources}
                   </p>
                 </div>
               </Card>
@@ -113,53 +199,161 @@ const GreenhouseGases = () => {
           })}
         </div>
 
-        <InteractiveParticle
-          title="Greenhouse Gas Molecules"
-          description="Visualize CO₂, CH₄, and other greenhouse gas molecules. Their unique structures allow them to absorb infrared radiation and trap heat."
-          particleCount={20}
-          particleColor="hsl(25, 85%, 55%)"
-        />
+        <GreenhouseGasVisualizer />
 
-        <Card className="p-8 bg-card/50 backdrop-blur border-border my-8">
+        <div className="grid md:grid-cols-2 gap-6 my-12">
+          <Card className="p-6 bg-gradient-to-br from-destructive/10 to-card/50 backdrop-blur border-destructive/30">
+            <div className="flex items-center gap-3 mb-4">
+              <Factory className="w-8 h-8 text-destructive" />
+              <h2 className="text-xl font-bold text-foreground">Human Impact</h2>
+            </div>
+            <div className="space-y-3 text-sm text-muted-foreground">
+              <div className="bg-background/50 p-3 rounded">
+                <p className="font-semibold text-foreground mb-1">CO₂ Emissions</p>
+                <p>37 billion tons annually from fossil fuels (2022)</p>
+              </div>
+              <div className="bg-background/50 p-3 rounded">
+                <p className="font-semibold text-foreground mb-1">Deforestation</p>
+                <p>10 million hectares of forest lost per year</p>
+              </div>
+              <div className="bg-background/50 p-3 rounded">
+                <p className="font-semibold text-foreground mb-1">Methane Leaks</p>
+                <p>Agriculture and fossil fuel extraction release 570 Mt/year</p>
+              </div>
+              <div className="bg-background/50 p-3 rounded">
+                <p className="font-semibold text-foreground mb-1">Industrial Processes</p>
+                <p>Cement, steel, and chemical production add billions of tons</p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6 bg-gradient-to-br from-primary/10 to-card/50 backdrop-blur border-primary/30">
+            <div className="flex items-center gap-3 mb-4">
+              <Thermometer className="w-8 h-8 text-primary" />
+              <h2 className="text-xl font-bold text-foreground">Climate Consequences</h2>
+            </div>
+            <div className="space-y-3 text-sm text-muted-foreground">
+              <div className="bg-background/50 p-3 rounded">
+                <p className="font-semibold text-foreground mb-1">Temperature Rise</p>
+                <p>+1.1°C since 1850; projected +1.5°C by 2030s</p>
+              </div>
+              <div className="bg-background/50 p-3 rounded">
+                <p className="font-semibold text-foreground mb-1">Sea Level Rise</p>
+                <p>20cm since 1900; accelerating at 3.7mm/year</p>
+              </div>
+              <div className="bg-background/50 p-3 rounded">
+                <p className="font-semibold text-foreground mb-1">Extreme Weather</p>
+                <p>Increased frequency and intensity of heatwaves, droughts, floods</p>
+              </div>
+              <div className="bg-background/50 p-3 rounded">
+                <p className="font-semibold text-foreground mb-1">Ocean Acidification</p>
+                <p>30% increase in acidity; threatening marine ecosystems</p>
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        <Card className="p-8 bg-gradient-to-br from-greenhouse/10 to-card/50 backdrop-blur border-greenhouse/30 mb-8">
+          <div className="flex items-center gap-3 mb-6">
+            <Leaf className="w-8 h-8 text-greenhouse" />
+            <h2 className="text-2xl font-bold text-foreground">Solutions & Mitigation</h2>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6 text-sm">
+            <div>
+              <h3 className="font-semibold text-foreground mb-3">Energy Transition</h3>
+              <ul className="space-y-2 text-muted-foreground list-disc list-inside">
+                <li>Renewable energy (solar, wind, hydro)</li>
+                <li>Nuclear power expansion</li>
+                <li>Energy efficiency improvements</li>
+                <li>Electrification of transport</li>
+                <li>Green hydrogen development</li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground mb-3">Carbon Capture</h3>
+              <ul className="space-y-2 text-muted-foreground list-disc list-inside">
+                <li>Direct air capture technology</li>
+                <li>Carbon capture at source</li>
+                <li>Enhanced weathering</li>
+                <li>Ocean alkalinity enhancement</li>
+                <li>Biochar and soil carbon</li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground mb-3">Natural Solutions</h3>
+              <ul className="space-y-2 text-muted-foreground list-disc list-inside">
+                <li>Reforestation and afforestation</li>
+                <li>Wetland restoration</li>
+                <li>Sustainable agriculture</li>
+                <li>Peatland protection</li>
+                <li>Blue carbon (coastal ecosystems)</li>
+              </ul>
+            </div>
+          </div>
+          <div className="mt-6 p-5 bg-background/50 rounded-lg border border-greenhouse/30">
+            <h3 className="font-semibold text-foreground mb-3">The Path Forward</h3>
+            <p className="text-muted-foreground mb-3">
+              Limiting global warming to 1.5°C requires cutting greenhouse gas emissions by <strong className="text-foreground">45% by 2030</strong> and 
+              reaching <strong className="text-foreground">net-zero by 2050</strong>. This demands unprecedented global cooperation and rapid deployment of clean technologies.
+            </p>
+            <div className="grid md:grid-cols-2 gap-4 mt-4">
+              <div className="bg-muted/30 p-3 rounded">
+                <p className="font-semibold text-foreground text-xs mb-1">Individual Actions</p>
+                <p className="text-xs text-muted-foreground">Reduce energy use, sustainable transport, plant-based diet, support climate policies</p>
+              </div>
+              <div className="bg-muted/30 p-3 rounded">
+                <p className="font-semibold text-foreground text-xs mb-1">Systemic Change</p>
+                <p className="text-xs text-muted-foreground">Policy reform, green investment, technology R&D, international cooperation</p>
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-8 bg-card/50 backdrop-blur border-border mb-8">
           <h2 className="text-2xl font-bold mb-4 text-foreground">
-            From Particles to Climate Crisis
+            From Quantum Particles to Global Climate
           </h2>
           <div className="space-y-4 text-muted-foreground">
             <p>
-              Our journey from quantum particles to climate change shows how the smallest building
-              blocks of matter create global consequences:
+              Our journey through particle physics reveals how the fundamental structure of matter determines Earth's climate:
             </p>
             <ol className="list-decimal list-inside space-y-3 ml-4">
               <li>
-                <strong className="text-foreground">Quarks</strong> combine to form protons and
-                neutrons
+                <strong className="text-foreground">Quarks</strong> combine via the strong force to form protons and neutrons
               </li>
               <li>
-                <strong className="text-foreground">Nucleons</strong> cluster with electrons to
-                create atoms
+                <strong className="text-foreground">Nucleons</strong> cluster in nuclei, with electrons forming atoms via electromagnetic force
               </li>
               <li>
-                <strong className="text-foreground">Atoms</strong> bond to form molecules like
-                CO₂, CH₄, and N₂O
+                <strong className="text-foreground">Atoms</strong> bond through electron sharing/transfer to create molecules
               </li>
               <li>
-                <strong className="text-foreground">These molecules</strong>' unique structures
-                allow them to trap infrared radiation
+                <strong className="text-foreground">Molecular geometry</strong> determines which wavelengths of infrared radiation can be absorbed
               </li>
               <li>
-                <strong className="text-foreground">Human activities</strong> release massive
-                amounts of these molecules
+                <strong className="text-foreground">Asymmetric molecules</strong> (CO₂, CH₄, N₂O) trap heat through quantum mechanical vibrational modes
               </li>
               <li>
-                <strong className="text-foreground">The result</strong>: global warming and
-                climate change
+                <strong className="text-foreground">Increased concentrations</strong> from human activity enhance heat trapping
+              </li>
+              <li>
+                <strong className="text-foreground">The result</strong>: rapid global warming, climate disruption, and ecological crisis
               </li>
             </ol>
-            <p className="mt-6 p-4 bg-muted/30 rounded-lg border border-greenhouse/30">
-              <strong className="text-foreground">The bottom line:</strong> Understanding particles
-              isn't just abstract physics—it's essential for comprehending and addressing the
-              greatest environmental challenge of our time.
-            </p>
+            <div className="mt-6 p-5 bg-gradient-to-br from-greenhouse/20 to-primary/10 rounded-lg border border-greenhouse/30">
+              <div className="flex items-start gap-3">
+                <Globe className="w-6 h-6 text-greenhouse flex-shrink-0 mt-1" />
+                <div>
+                  <p className="font-semibold text-foreground mb-2">The Fundamental Connection</p>
+                  <p className="text-sm">
+                    Understanding particles isn't just abstract physics—it reveals the precise mechanisms driving climate change. 
+                    The quantum mechanical properties of greenhouse gas molecules, determined by the arrangement of quarks in their atomic nuclei, 
+                    dictate how Earth's energy balance is disrupted. This knowledge is essential for developing effective mitigation strategies and 
+                    understanding our planet's future.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </Card>
 
