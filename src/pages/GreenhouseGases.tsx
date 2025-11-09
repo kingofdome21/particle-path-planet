@@ -375,6 +375,38 @@ const GreenhouseGases = () => {
           </div>
         </Card>
 
+        <Card className="p-6 bg-card/50 backdrop-blur border-border mb-8">
+          <h3 className="text-xl font-bold mb-4 text-foreground flex items-center gap-2">
+            <BookOpen className="w-5 h-5 text-primary" />
+            Sources & References
+          </h3>
+          <div className="space-y-3 text-sm text-muted-foreground">
+            <div className="bg-background/50 p-4 rounded-lg border border-border">
+              <p className="font-semibold text-foreground mb-2">MIT Climate Portal</p>
+              <p className="mb-2">
+                "How do greenhouse gases trap heat in the atmosphere?" - MIT Climate Portal provides comprehensive explanations 
+                of the molecular mechanisms behind the greenhouse effect and climate change.
+              </p>
+              <a 
+                href="https://climate.mit.edu/ask-mit/how-do-greenhouse-gases-trap-heat-atmosphere" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-primary hover:underline text-xs"
+              >
+                climate.mit.edu/ask-mit/how-do-greenhouse-gases-trap-heat-atmosphere
+              </a>
+            </div>
+            <div className="bg-background/50 p-4 rounded-lg border border-border">
+              <p className="font-semibold text-foreground mb-2">Additional Scientific Sources</p>
+              <ul className="space-y-1 text-xs">
+                <li>• IPCC Sixth Assessment Report (2021-2023) - Climate change science and impacts</li>
+                <li>• NOAA Global Monitoring Laboratory - Atmospheric greenhouse gas data</li>
+                <li>• NASA Earth Observatory - Climate science and satellite observations</li>
+              </ul>
+            </div>
+          </div>
+        </Card>
+
         <div className="flex justify-center mb-8">
           <CompleteSectionButton sectionId="greenhouse" sectionName="Greenhouse Gases" />
         </div>
