@@ -200,22 +200,21 @@ const ClimateData = () => {
                 </div>
               )}
 
-              {coords && (
-                <Card className="p-6 bg-card/50 backdrop-blur">
-                  <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                    <MapPin className="w-5 h-5 text-primary" />
-                    Air Quality Map
-                  </h3>
-                  <AirQualityMap 
-                    lat={coords.lat} 
-                    lon={coords.lon} 
-                    locationName={locationName}
-                    aqi={climateData.aqi}
-                  />
-                </Card>
-              )}
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {coords && (
+                  <Card className="p-6 bg-card/50 backdrop-blur md:col-span-2">
+                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                      <MapPin className="w-5 h-5 text-primary" />
+                      Location Map
+                    </h3>
+                    <AirQualityMap 
+                      lat={coords.lat} 
+                      lon={coords.lon} 
+                      locationName={locationName}
+                      aqi={climateData.aqi}
+                    />
+                  </Card>
+                )}
                 <Card className="p-6 bg-gradient-to-br from-blue-500/10 to-blue-600/10 border-blue-500/20">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="p-3 bg-blue-500/20 rounded-lg">

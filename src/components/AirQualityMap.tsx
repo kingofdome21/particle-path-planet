@@ -65,7 +65,7 @@ const getAQILabel = (aqi: number) => {
 
 export const AirQualityMap = ({ lat, lon, locationName, aqi }: AirQualityMapProps) => {
   return (
-    <div className="h-[400px] w-full rounded-lg overflow-hidden border border-border">
+    <div className="h-[300px] w-full rounded-lg overflow-hidden border border-border">
       <MapContainer
         center={[lat, lon]}
         zoom={10}
