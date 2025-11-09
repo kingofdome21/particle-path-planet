@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { MapPin, Navigation, Wind, Droplets, Sun, Activity } from "lucide-react";
 import { toast } from "sonner";
+import { AirQualityMap } from "@/components/AirQualityMap";
 
 interface ClimateData {
   temperature: number;
@@ -197,6 +198,21 @@ const ClimateData = () => {
                     {locationName}
                   </h2>
                 </div>
+              )}
+
+              {coords && (
+                <Card className="p-6 bg-card/50 backdrop-blur">
+                  <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                    <MapPin className="w-5 h-5 text-primary" />
+                    Air Quality Map
+                  </h3>
+                  <AirQualityMap 
+                    lat={coords.lat} 
+                    lon={coords.lon} 
+                    locationName={locationName}
+                    aqi={climateData.aqi}
+                  />
+                </Card>
               )}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
