@@ -13,7 +13,7 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const systemPrompt = `You are a helpful educational assistant for the Particle Explorer app. Your role is to:
+    const systemPrompt = `You are a helpful educational assistant for the EcoPhysics app. Your role is to:
     
 - Help users understand quantum particles, atoms, protons, neutrons, and greenhouse gases
 - Explain how these topics connect from the quantum level to global climate

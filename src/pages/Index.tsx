@@ -56,7 +56,7 @@ const Index = () => {
           <div className="absolute inset-0 flex items-center justify-center text-center p-8">
             <div>
               <h1 className="text-5xl md:text-6xl font-bold mb-4 text-foreground">
-                Journey Through Particles
+                EcoPhysics
               </h1>
               <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto">
                 From quantum mechanics to climate science—explore the particles that shape our universe
