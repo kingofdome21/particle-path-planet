@@ -1,73 +1,75 @@
-# Welcome to your Lovable project
+# 🪐 EcoPhysics
 
-## Project info
+**EcoPhysics** is an **AI-powered educational web and Android application** that transforms complex scientific concepts into interactive, visual learning experiences.  
+The platform bridges **quantum mechanics**, **atomic structure**, and **climate science** through simulations, quizzes, and an integrated AI tutor.
 
-**URL**: https://lovable.dev/projects/4727f6e1-d514-430f-a6b1-a716e73ef307
+---
 
-## How can I edit this code?
+## 🚀 Features
 
-There are several ways of editing your application.
+- **Interactive Simulations:**  
+  Explore quantum mechanics, build atoms, and visualize greenhouse gas effects in real-time.  
+- **AI Tutoring Chatbot:**  
+  Powered by **Google Gemini 2.5 Flash** via the **Lovable AI Gateway**, offering contextual explanations and real-time feedback.  
+- **Gamified Learning:**  
+  Section-based quizzes with instant scoring and adaptive feedback.  
+- **Progress Tracking:**  
+  Real-time user progress, quiz scores, and achievements stored securely via **Supabase**.  
+- **Cross-Platform Support:**  
+  Built as a **Progressive Web App (PWA)** for smooth performance on both **web and Android** devices.  
 
-**Use Lovable**
+---
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/4727f6e1-d514-430f-a6b1-a716e73ef307) and start prompting.
+## 🧠 What It Does
 
-Changes made via Lovable will be committed automatically to this repo.
+**EcoPhysics** simplifies difficult scientific theories and encourages **active learning**.  
+It guides users through **four educational modules**:
 
-**Use your preferred IDE**
+1. **Quantum Particles** – Explore the fundamentals of quantum mechanics.  
+2. **Protons & Neutrons** – Understand nuclear physics and atomic structure.  
+3. **Atoms** – Build and visualize atomic models interactively.  
+4. **Greenhouse Gases** – Connect atomic behavior to real-world climate science.  
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Each module combines **interactive simulations**, **AI tutoring**, and **quizzes** to help learners gain a deeper understanding of how physics applies to the world around them.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+---
 
-Follow these steps:
+## ⚙️ Tech Stack
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### **Frontend**
+- React 18  
+- TypeScript  
+- Vite (build tool)  
+- Tailwind CSS  
+- shadcn/ui  
+- TanStack Query  
+- React Hook Form + Zod  
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### **Backend**
+- Supabase (Lovable Cloud)  
+  - PostgreSQL database  
+  - Authentication  
+  - Row Level Security (RLS)  
+  - Edge Functions for AI streaming  
 
-# Step 3: Install the necessary dependencies.
-npm i
+### **AI & Cloud**
+- Google Gemini 2.5 Flash (via Lovable AI Gateway)  
+- Lovable AI for development and integration  
+- Vercel for hosting and continuous deployment  
+- GitHub Actions for CI/CD automation  
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+---
 
-**Edit a file directly in GitHub**
+## 💡 Architecture Overview
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/4727f6e1-d514-430f-a6b1-a716e73ef307) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+```plaintext
+Frontend (React + TypeScript)
+        │
+        ▼
+Supabase (Database + Auth + RLS)
+        │
+        ▼
+Edge Functions (AI Streaming via Lovable Gateway)
+        │
+        ▼
+Google Gemini 2.5 Flash (AI Responses)
