@@ -37,14 +37,29 @@ const ClimateData = () => {
       (position) => {
         const { latitude, longitude } = position.coords;
         setCoords({ lat: latitude, lon: longitude });
-        setLocationName("Current Location");
         fetchClimateData(latitude, longitude);
+        fetchLocationName(latitude, longitude);
       },
       (error) => {
         toast.error("Unable to retrieve your location");
         setLoading(false);
       }
     );
+  };
+
+  const fetchLocationName = async (lat: number, lon: number) => {
+    try {
+      const response = await fetch(
+        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`
+      );
+      const data = await response.json();
+      const city = data.city || data.locality || data.principalSubdivision;
+      const country = data.countryName;
+      setLocationName(`Current Location: ${city}, ${country}`);
+    } catch (error) {
+      console.error("Error fetching location name:", error);
+      setLocationName("Current Location");
+    }
   };
 
   const searchLocation = async () => {
