@@ -67,14 +67,11 @@ export const Quiz = ({ questions, sectionId, onComplete, difficulty }: QuizProps
       setSelectedAnswer(null);
       setShowExplanation(false);
     } else {
-      // Calculate final score including the last question
-      const finalScore = score + (isCorrect ? 1 : 0);
-      setScore(finalScore); // Update score state with final value
       setQuizCompleted(true);
-      saveQuizScore(sectionId, finalScore);
-      onComplete?.(finalScore);
+      saveQuizScore(sectionId, score);
+      onComplete?.(score);
       toast.success("Quiz completed!", {
-        description: `You scored ${finalScore}/${questions.length}!`,
+        description: `You scored ${score}/${questions.length}!`,
       });
     }
   };
