@@ -37,8 +37,8 @@ const ClimateData = () => {
       (position) => {
         const { latitude, longitude } = position.coords;
         setCoords({ lat: latitude, lon: longitude });
+        setLocationName("Current Location");
         fetchClimateData(latitude, longitude);
-        fetchLocationName(latitude, longitude);
       },
       (error) => {
         toast.error("Unable to retrieve your location");
@@ -77,20 +77,6 @@ const ClimateData = () => {
     }
   };
 
-  const fetchLocationName = async (lat: number, lon: number) => {
-    try {
-      const response = await fetch(
-        `https://geocoding-api.open-meteo.com/v1/search?latitude=${lat}&longitude=${lon}&count=1&language=en&format=json`
-      );
-      const data = await response.json();
-      if (data.results && data.results.length > 0) {
-        const { name, country } = data.results[0];
-        setLocationName(`${name}, ${country}`);
-      }
-    } catch (error) {
-      console.error("Error fetching location name:", error);
-    }
-  };
 
   const fetchClimateData = async (lat: number, lon: number) => {
     try {
