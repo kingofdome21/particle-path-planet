@@ -9,6 +9,7 @@ const navItems = [
   { path: "/protons-neutrons", label: "Nucleons", icon: FlaskConical },
   { path: "/atoms", label: "Atoms", icon: Atom },
   { path: "/greenhouse", label: "Climate", icon: Globe },
+  { path: "/climate-data", label: "Live Data", icon: Globe },
 ];
 
 export const NavigationBar = () => {

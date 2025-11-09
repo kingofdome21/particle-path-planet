@@ -10,6 +10,7 @@ import QuantumParticles from "./pages/QuantumParticles";
 import ProtonsNeutrons from "./pages/ProtonsNeutrons";
 import Atoms from "./pages/Atoms";
 import GreenhouseGases from "./pages/GreenhouseGases";
+import ClimateData from "./pages/ClimateData";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/protons-neutrons" element={<ProtonsNeutrons />} />
           <Route path="/atoms" element={<Atoms />} />
           <Route path="/greenhouse" element={<GreenhouseGases />} />
+          <Route path="/climate-data" element={<ClimateData />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
