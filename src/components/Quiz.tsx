@@ -42,7 +42,7 @@ export const Quiz = ({ questions, sectionId, onComplete, difficulty }: QuizProps
   const [showExplanation, setShowExplanation] = useState(false);
   const [score, setScore] = useState(0);
   const [quizCompleted, setQuizCompleted] = useState(false);
-  const { saveQuizScore, completeSection } = useProgress();
+  const { saveQuizScore } = useProgress();
 
   const question = questions[currentQuestion];
   const isCorrect = selectedAnswer === question.correctAnswer;
@@ -72,7 +72,6 @@ export const Quiz = ({ questions, sectionId, onComplete, difficulty }: QuizProps
       setScore(finalScore); // Update score state with final value
       setQuizCompleted(true);
       saveQuizScore(sectionId, finalScore);
-      completeSection(sectionId);
       onComplete?.(finalScore);
       toast.success("Quiz completed!", {
         description: `You scored ${finalScore}/${questions.length}!`,
